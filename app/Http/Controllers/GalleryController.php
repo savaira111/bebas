@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Gallery;
+use App\Models\Category;
+use App\Models\Album;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class GalleryController extends Controller
+{
+    public function index()
+    {
+        // hanya data aktif (bukan sampah)
+        $galleries = Gallery::whereNull('deleted_at')
+            ->latest()
+            ->get();
+
+        return view('galleries.index', compact('galleries'));
+    }
+
+    public function trashed()
+    {
+        // data sampah (soft delete)
+        $galleries = Gallery::onlyTrashed()
+            ->latest()
+            ->get();
+
+        return view('galleries.trashed', compact('galleries'));
+    }
+
+    public function create(Request $request)
+    {
+        $categories = Category::whereNull('deleted_at')->get();
+        $albums = Album::whereNull('deleted_at')->get();
+
+        return view('galleries.create', compact('categories', 'albums'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:foto,video',
+            'category_id' => 'required|exists:categories,id',
+            'album_id' => 'nullable|exists:albums,id',
+            'description' => 'nullable|string',
+            'images' => 'required',
+            'images.*' => 'file|max:10240',
+        ]);
+
+        $gallery = Gallery::create([
+            'title' => $request->title,
+            'type' => $request->type,
+            'category_id' => $request->category_id,
+            'album_id' => $request->album_id,
+            'description' => $request->description,
+        ]);
+
+        foreach ($request->file('images') as $file) {
+            $path = $file->store('galleries', 'public');
+
+            $gallery->photos()->create([
+                'image' => $path,
+            ]);
+        }
+
+        return redirect()->route('galleries.index')->with('success', 'Gallery berhasil ditambahkan');
+    }
+
+    public function show(Gallery $gallery)
+    {
+        return view('galleries.show', compact('gallery'));
+    }
+
+    public function destroy(Gallery $gallery)
+    {
+        // soft delete → masuk sampah (file TIDAK dihapus)
+        $gallery->delete();
+
+        return redirect()->route('galleries.index')->with('success', 'Gallery masuk ke sampah');
+    }
+
+    public function restore($id)
+    {
+        Gallery::onlyTrashed()
+            ->findOrFail($id)
+            ->restore();
+
+        return back()->with('success', 'Gallery berhasil dipulihkan');
+    }
+
+    public function forceDelete($id)
+    {
+        $gallery = Gallery::onlyTrashed()->findOrFail($id);
+
+        foreach ($gallery->photos as $photo) {
+            Storage::disk('public')->delete($photo->image);
+        }
+
+        $gallery->forceDelete();
+
+        return back()->with('success', 'Gallery dihapus permanen');
+    }
+}
