@@ -12,6 +12,7 @@ use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\AlbumPhotoController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\TrashController;
 use App\Models\User;
 
 /*
@@ -19,6 +20,7 @@ use App\Models\User;
 | ROOT
 |-------------------------------------------------------------------------- 
 */
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -101,14 +103,14 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
 
     Route::prefix('superadmin/users')->name('superadmin.users.')->group(function () {
 
-        Route::get('/trashed', [UserManagementController::class, 'trashed'])
-            ->name('trashed');
+        Route::get('/trash', [TrashController::class, 'index'])
+            ->name('trash.index');
 
-        Route::post('/{id}/restore', [UserManagementController::class, 'restore'])
-            ->name('restore');
+        Route::post('/trash/{id}/restore', [TrashController::class, 'restore'])
+            ->name('trash.restore');
 
-        Route::delete('/{id}/force', [UserManagementController::class, 'forceDelete'])
-            ->name('forceDelete');
+        Route::delete('/trash/{id}/force', [TrashController::class, 'forceDelete'])
+            ->name('trash.forceDelete');
     });
 
     Route::resource('/superadmin/users', UserManagementController::class)->names([

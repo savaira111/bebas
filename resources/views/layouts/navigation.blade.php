@@ -87,8 +87,8 @@
                             </x-nav-link>
 
                             <x-nav-link 
-                                :href="route('admin.users.trashed')" 
-                                :active="request()->routeIs('admin.users.trashed')"
+                                :href="route('trash.index')" 
+                                :active="request()->routeIs('trash.index')"
                                 class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
                                 Sampah
                             </x-nav-link>
@@ -137,8 +137,8 @@
                             </x-nav-link>
 
                             <x-nav-link 
-                                :href="route('superadmin.users.trashed')" 
-                                :active="request()->routeIs('superadmin.users.trashed')"
+                                :href="route('superadmin.users.trash.index')" 
+                                :active="request()->routeIs('superadmin.users.trash.index')"
                                 class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
                                 Sampah
                             </x-nav-link>

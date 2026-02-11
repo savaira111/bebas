@@ -9,10 +9,11 @@ return new class extends Migration {
     {
         Schema::create('album_photos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('gallery_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('album_id')->constrained()->cascadeOnDelete();
             $table->string('image');
             $table->string('caption')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

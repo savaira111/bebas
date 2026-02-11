@@ -9,20 +9,16 @@ class ArticleController extends Controller
 {
     public function index()
     {
-        // hanya data aktif (bukan sampah)
-        $articles = Article::whereNull('deleted_at')
-            ->latest()
-            ->get();
+        // otomatis hanya data aktif (bukan sampah)
+        $articles = Article::latest()->get();
 
         return view('articles.index', compact('articles'));
     }
 
     public function trashed()
     {
-        // data sampah (soft delete)
-        $articles = Article::onlyTrashed()
-            ->latest()
-            ->get();
+        // data sampah
+        $articles = Article::onlyTrashed()->latest()->get();
 
         return view('articles.trashed', compact('articles'));
     }
@@ -37,13 +33,12 @@ class ArticleController extends Controller
         $data = $r->validate([
             'title' => 'required',
             'content' => 'nullable',
-            'image' => 'nullable|image',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:10240',
             'meta_title' => 'nullable',
             'meta_keywords' => 'nullable',
             'meta_description' => 'nullable',
         ]);
 
-        // default draft
         $data['status'] = 'draft';
 
         if ($r->hasFile('image')) {
@@ -74,16 +69,20 @@ class ArticleController extends Controller
             $data['image'] = $r->file('image')->store('articles', 'public');
         }
 
-        $article->update($data);
+        $article->update([
+            'status' => 'publish',
+            'published_at' => now(),
+        ]);
 
         return redirect()->route('articles.index');
     }
 
     public function destroy(Article $article)
     {
-        // soft delete -> masuk sampah
+        // SOFT DELETE -> masuk sampah
         $article->delete();
-        return back();
+
+        return back()->with('success', 'Artikel dipindahkan ke Sampah');
     }
 
     public function restore($id)
@@ -92,7 +91,7 @@ class ArticleController extends Controller
             ->findOrFail($id)
             ->restore();
 
-        return back();
+        return back()->with('success', 'Artikel berhasil dipulihkan');
     }
 
     public function forceDelete($id)
@@ -101,14 +100,18 @@ class ArticleController extends Controller
             ->findOrFail($id)
             ->forceDelete();
 
-        return back();
+        return back()->with('success', 'Artikel dihapus permanen');
     }
 
     public function publish($id)
     {
-        $article = Article::findOrFail($id);
-        $article->status = 'publish';
-        $article->save(); // waktu publish pakai updated_at
+        // JANGAN publish artikel di sampah
+        $article = Article::whereNull('deleted_at')->findOrFail($id);
+
+        $article->update([
+            'status' => 'publish',
+            'published_at' => now(), // opsional tapi REKOMENDASI
+        ]);
 
         return redirect()->route('articles.index');
     }

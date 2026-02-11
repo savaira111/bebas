@@ -25,7 +25,7 @@ class Gallery extends Model
 
     public function photos()
     {
-        return $this->hasMany(AlbumPhoto::class, 'gallery_id');
+        return $this->hasMany(AlbumPhoto::class, 'album_id');
     }
 
     public function album()

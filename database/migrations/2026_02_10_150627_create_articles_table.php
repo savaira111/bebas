@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->text('content')->nullable();
             $table->string('image')->nullable();
             $table->enum('status', ['draft', 'submit', 'publish'])->default('draft');
+            $table->timestamp('published_at')->nullable(); 
             $table->unsignedInteger('views')->default(0);
             $table->unsignedInteger('likes')->default(0);
             $table->string('meta_title')->nullable();

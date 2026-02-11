@@ -46,7 +46,7 @@ class GalleryController extends Controller
             'category_id' => 'required|exists:categories,id',
             'album_id' => 'nullable|exists:albums,id',
             'description' => 'nullable|string',
-            'images' => 'required',
+            'images' => 'required|array',
             'images.*' => 'file|max:10240',
         ]);
 
@@ -58,12 +58,20 @@ class GalleryController extends Controller
             'description' => $request->description,
         ]);
 
-        foreach ($request->file('images') as $file) {
-            $path = $file->store('galleries', 'public');
+        // Pastikan ada file sebelum proses
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                // Simpan file ke storage/public/galleries
+                $path = $file->store('galleries', 'public');
 
-            $gallery->photos()->create([
-                'image' => $path,
-            ]);
+                // Hanya insert photo jika album_id valid
+                if ($request->album_id) {
+                    $gallery->photos()->create([
+                        'image' => $path,
+                        'album_id' => $request->album_id,
+                    ]);
+                }
+            }
         }
 
         return redirect()->route('galleries.index')->with('success', 'Gallery berhasil ditambahkan');
@@ -72,6 +80,12 @@ class GalleryController extends Controller
     public function show(Gallery $gallery)
     {
         return view('galleries.show', compact('gallery'));
+    }
+
+    public function edit(Gallery $gallery)
+    {
+        // Kirim data gallery ke view edit
+        return view('galleries.edit', compact('gallery'));
     }
 
     public function destroy(Gallery $gallery)
