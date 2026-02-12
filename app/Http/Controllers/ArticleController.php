@@ -4,22 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ArticleController extends Controller
 {
     public function index()
     {
-        // otomatis hanya data aktif (bukan sampah)
         $articles = Article::latest()->get();
-
         return view('articles.index', compact('articles'));
     }
 
     public function trashed()
     {
-        // data sampah
         $articles = Article::onlyTrashed()->latest()->get();
-
         return view('articles.trashed', compact('articles'));
     }
 
@@ -39,6 +36,7 @@ class ArticleController extends Controller
             'meta_description' => 'nullable',
         ]);
 
+        $data['slug'] = Str::slug($data['title']);
         $data['status'] = 'draft';
 
         if ($r->hasFile('image')) {
@@ -57,31 +55,32 @@ class ArticleController extends Controller
 
     public function update(Request $r, Article $article)
     {
-        $data = $r->only([
-            'title',
-            'content',
-            'meta_title',
-            'meta_keywords',
-            'meta_description',
+        $data = $r->validate([
+            'title' => 'required',
+            'content' => 'nullable',
+            'meta_title' => 'nullable',
+            'meta_keywords' => 'nullable',
+            'meta_description' => 'nullable',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:10240',
         ]);
+
+        $data['slug'] = Str::slug($data['title']);
 
         if ($r->hasFile('image')) {
             $data['image'] = $r->file('image')->store('articles', 'public');
         }
 
-        $article->update([
-            'status' => 'publish',
-            'published_at' => now(),
-        ]);
+        $data['status'] = 'publish';
+        $data['published_at'] = now();
+
+        $article->update($data);
 
         return redirect()->route('articles.index');
     }
 
     public function destroy(Article $article)
     {
-        // SOFT DELETE -> masuk sampah
         $article->delete();
-
         return back()->with('success', 'Artikel dipindahkan ke Sampah');
     }
 
@@ -105,12 +104,11 @@ class ArticleController extends Controller
 
     public function publish($id)
     {
-        // JANGAN publish artikel di sampah
         $article = Article::whereNull('deleted_at')->findOrFail($id);
 
         $article->update([
             'status' => 'publish',
-            'published_at' => now(), // opsional tapi REKOMENDASI
+            'published_at' => now(),
         ]);
 
         return redirect()->route('articles.index');

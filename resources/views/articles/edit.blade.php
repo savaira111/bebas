@@ -17,7 +17,7 @@
             @endif
 
             <form method="POST"
-                  action="{{ route('articles.update', $article) }}"
+                  action="{{ route('articles.update', $article->id) }}"
                   enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -35,12 +35,14 @@
                     </div>
 
                     <div class="bg-[#212844] p-6 rounded-2xl shadow text-white">
-                        <label class="block font-semibold mb-2">Slug</label>
+                        <label class="block font-semibold mb-2">Slug (Otomatis)</label>
                         <input type="text"
                                name="slug"
                                id="slug"
                                value="{{ old('slug', $article->slug) }}"
-                               class="w-full px-4 py-2 rounded-lg bg-[#2a3155] border border-white text-white">
+                               readonly
+                               class="w-full px-4 py-2 rounded-lg bg-[#2a3155] border border-white text-gray-300 cursor-not-allowed">
+                        <small class="text-gray-300">Slug otomatis mengikuti judul</small>
                     </div>
                 </div>
 
@@ -61,25 +63,28 @@
 
                         {{-- SEO --}}
                         <div class="bg-[#212844] p-6 rounded-2xl shadow text-white">
-                            <label class="block font-semibold mb-3">SEO</label>
+                            <label class="block font-semibold mb-3">SEO (Opsional)</label>
 
+                            <label class="text-sm text-gray-300">Meta Title</label>
                             <input type="text"
                                    name="meta_title"
                                    value="{{ old('meta_title', $article->meta_title) }}"
-                                   placeholder="Meta Title"
+                                   placeholder="Judul khusus untuk mesin pencari"
                                    class="w-full mb-3 px-4 py-2 rounded-lg bg-[#2a3155] border border-white text-white">
 
+                            <label class="text-sm text-gray-300">Meta Keywords</label>
                             <input type="text"
                                    name="meta_keywords"
                                    value="{{ old('meta_keywords', $article->meta_keywords) }}"
-                                   placeholder="Meta Keywords"
+                                   placeholder="contoh: skincare, wajah, perawatan"
                                    class="w-full mb-1 px-4 py-2 rounded-lg bg-[#2a3155] border border-white text-white">
-                            <small class="text-gray-300">pisahkan dengan koma (,)</small>
+                            <small class="text-gray-300">Pisahkan dengan koma (,)</small>
 
+                            <label class="text-sm text-gray-300 mt-3 block">Meta Description</label>
                             <textarea name="meta_description"
                                       rows="3"
-                                      placeholder="Meta Description"
-                                      class="w-full mt-3 px-4 py-2 rounded-lg bg-[#2a3155] border border-white text-white">{{ old('meta_description', $article->meta_description) }}</textarea>
+                                      placeholder="Ringkasan singkat artikel untuk hasil pencarian Google"
+                                      class="w-full mt-1 px-4 py-2 rounded-lg bg-[#2a3155] border border-white text-white">{{ old('meta_description', $article->meta_description) }}</textarea>
                         </div>
 
                         {{-- IMAGE --}}
@@ -109,6 +114,7 @@
                 {{-- BUTTON --}}
                 <div class="flex justify-center gap-4 mt-8">
                     <button type="submit"
+                            onclick="syncEditor()"
                             class="px-8 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
                         Update
                     </button>
@@ -141,17 +147,25 @@
             ]
         });
 
+        function syncEditor() {
+            for (instance in CKEDITOR.instances) {
+                CKEDITOR.instances[instance].updateElement();
+            }
+        }
+
         const titleInput = document.getElementById('title');
         const slugInput  = document.getElementById('slug');
 
+        function generateSlug(text) {
+            return text
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .trim()
+                .replace(/\s+/g, '-');
+        }
+
         titleInput.addEventListener('input', function () {
-            if (!slugInput.value) {
-                slugInput.value = this.value
-                    .toLowerCase()
-                    .replace(/[^a-z0-9\s-]/g, '')
-                    .trim()
-                    .replace(/\s+/g, '-');
-            }
+            slugInput.value = generateSlug(this.value);
         });
     </script>
 </x-app-layout>

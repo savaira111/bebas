@@ -6,25 +6,45 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('articles', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->string('slug')->unique();
-            $table->text('content')->nullable();
-            $table->string('image')->nullable();
-            $table->enum('status', ['draft', 'submit', 'publish'])->default('draft');
-            $table->timestamp('published_at')->nullable(); 
-            $table->unsignedInteger('views')->default(0);
-            $table->unsignedInteger('likes')->default(0);
-            $table->string('meta_title')->nullable();
-            $table->string('meta_keywords')->nullable();
-            $table->text('meta_description')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-        });
+
+        if (!Schema::hasTable('articles')) {
+
+            Schema::create('articles', function (Blueprint $table) {
+                $table->id();
+                $table->string('title');
+                $table->string('slug')->unique();
+                $table->text('content')->nullable();
+                $table->string('image')->nullable();
+                $table->enum('status', ['draft', 'submit', 'publish'])->default('draft');
+                $table->timestamp('published_at')->nullable();
+                $table->unsignedInteger('views')->default(0);
+                $table->unsignedInteger('likes')->default(0);
+                $table->string('meta_title')->nullable();
+                $table->string('meta_keywords')->nullable();
+                $table->text('meta_description')->nullable();
+                $table->timestamps();
+                $table->softDeletes();
+            });
+
+        } else {
+
+            Schema::table('articles', function (Blueprint $table) {
+
+                if (!Schema::hasColumn('articles', 'published_at')) {
+                    $table->timestamp('published_at')->nullable()->after('status');
+                }
+
+            });
+
+        }
     }
 
     public function down(): void {
-        Schema::dropIfExists('articles');
+
+        if (Schema::hasColumn('articles', 'published_at')) {
+            Schema::table('articles', function (Blueprint $table) {
+                $table->dropColumn('published_at');
+            });
+        }
     }
 };
