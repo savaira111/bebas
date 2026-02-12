@@ -8,6 +8,13 @@
     <div class="py-12 bg-gradient-to-br from-[#F0E8D5] to-[#E0D8C0] min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
+            <!-- Tombol Tambah User -->
+            <div class="flex justify-end mb-4">
+                <a href="{{ route('superadmin.users.create') }}" 
+                   class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow">
+                    + Tambah User
+                </a>
+            </div>
             <!-- SweetAlert Sukses -->
             @if(session('success'))
                 <script>
@@ -43,14 +50,6 @@
                 </button>
             </form>
 
-            <!-- Tombol Tambah User -->
-            <div class="flex justify-end mb-4">
-                <a href="{{ route('superadmin.users.create') }}" 
-                   class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow">
-                    + Tambah User
-                </a>
-            </div>
-
             <!-- Tabel User -->
             <div class="bg-[#212844] shadow-lg sm:rounded-lg p-4 overflow-x-auto mt-4">
                 <table class="min-w-full divide-y divide-gray-600 text-sm">
@@ -68,13 +67,12 @@
                     </thead>
 
                     <tbody class="divide-y divide-gray-600">
+                        @php $hasData = false; @endphp
                         @forelse($users as $user)
-
-                            {{-- Sembunyikan superadmin --}}
                             @if($user->role === 'superadmin')
                                 @continue
                             @endif
-
+                            @php $hasData = true; @endphp
                             <tr class="hover:bg-[#1a1f33] transition">
                                 <td class="px-3 py-2 text-white">
                                     {{ $loop->iteration }}
@@ -123,14 +121,20 @@
                                     </button>
                                 </td>
                             </tr>
-
                         @empty
                             <tr>
                                 <td colspan="8" class="text-center py-4 text-gray-300">
-                                    Tidak ada data user.
+                                    Belum ada data.
                                 </td>
                             </tr>
                         @endforelse
+                        @if(!$hasData)
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-gray-300">
+                                    Belum ada data.
+                                </td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>

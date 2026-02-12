@@ -12,7 +12,6 @@ class GalleryController extends Controller
 {
     public function index()
     {
-        // hanya data aktif (bukan sampah)
         $galleries = Gallery::whereNull('deleted_at')
             ->latest()
             ->get();
@@ -22,7 +21,6 @@ class GalleryController extends Controller
 
     public function trashed()
     {
-        // data sampah (soft delete)
         $galleries = Gallery::onlyTrashed()
             ->latest()
             ->get();
@@ -42,13 +40,16 @@ class GalleryController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'type' => 'required|in:foto,video',
+            'type' => 'required|in:foto,video,balance',
             'category_id' => 'required|exists:categories,id',
             'album_id' => 'nullable|exists:albums,id',
             'description' => 'nullable|string',
-            'images' => 'required|array',
-            'images.*' => 'file|max:10240',
+            'images' => 'required|array|max:10',
+            'images.*' => 'file|max:10240', // max 10MB per file
         ]);
+
+        // Validasi tipe file sesuai type
+        Gallery::validateFiles($request->file('images'), $request->type);
 
         $gallery = Gallery::create([
             'title' => $request->title,
@@ -58,13 +59,9 @@ class GalleryController extends Controller
             'description' => $request->description,
         ]);
 
-        // Pastikan ada file sebelum proses
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
-                // Simpan file ke storage/public/galleries
                 $path = $file->store('galleries', 'public');
-
-                // Hanya insert photo jika album_id valid
                 if ($request->album_id) {
                     $gallery->photos()->create([
                         'image' => $path,
@@ -84,15 +81,54 @@ class GalleryController extends Controller
 
     public function edit(Gallery $gallery)
     {
-        // Kirim data gallery ke view edit
-        return view('galleries.edit', compact('gallery'));
+        $categories = Category::whereNull('deleted_at')->get();
+        $albums = Album::whereNull('deleted_at')->get();
+
+        return view('galleries.edit', compact('gallery', 'categories', 'albums'));
+    }
+
+    public function update(Request $request, Gallery $gallery)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'type' => 'required|in:foto,video,balance',
+            'category_id' => 'required|exists:categories,id',
+            'album_id' => 'nullable|exists:albums,id',
+            'description' => 'nullable|string',
+            'images' => 'nullable|array|max:10',
+            'images.*' => 'file|max:10240',
+        ]);
+
+        if ($request->hasFile('images')) {
+            Gallery::validateFiles($request->file('images'), $request->type);
+        }
+
+        $gallery->update([
+            'title' => $request->title,
+            'type' => $request->type,
+            'category_id' => $request->category_id,
+            'album_id' => $request->album_id,
+            'description' => $request->description,
+        ]);
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('galleries', 'public');
+                if ($request->album_id) {
+                    $gallery->photos()->create([
+                        'image' => $path,
+                        'album_id' => $request->album_id,
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('galleries.index')->with('success', 'Gallery berhasil diupdate');
     }
 
     public function destroy(Gallery $gallery)
     {
-        // soft delete → masuk sampah (file TIDAK dihapus)
         $gallery->delete();
-
         return redirect()->route('galleries.index')->with('success', 'Gallery masuk ke sampah');
     }
 

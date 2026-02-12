@@ -58,7 +58,9 @@
                                        class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
                                         Edit
                                     </a>
-                                    <button onclick="deleteCategory({{ $category->id }})"
+                                    <button type="button"
+                                            data-route="{{ route('categories.destroy', $category) }}"
+                                            onclick="confirmDelete(this)"
                                             class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
                                         Hapus
                                     </button>
@@ -78,26 +80,29 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function deleteCategory(id) {
+        function confirmDelete(button) {
             Swal.fire({
                 title: 'Hapus Category?',
-                text: "Category akan dihapus permanen.",
+                text: "Category akan dipindahkan ke tempat sampah.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Ya'
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
                     let form = document.createElement('form');
-                    form.action = `/categories/${id}`;
+                    form.action = button.dataset.route;
                     form.method = 'POST';
-                    form.innerHTML = `@csrf @method('DELETE')`;
+                    form.innerHTML = `
+                        @csrf
+                        @method('DELETE')
+                    `;
                     document.body.appendChild(form);
                     form.submit();
                 }
             });
         }
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </x-app-layout>

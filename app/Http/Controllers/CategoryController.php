@@ -7,10 +7,10 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    // Tampilkan semua kategori (termasuk soft delete)
+    // Tampilkan semua kategori (hanya yang belum dihapus)
     public function index()
     {
-        $categories = Category::withTrashed()->get();
+        $categories = Category::latest()->get(); // exclude soft deleted
         return view('categories.index', compact('categories'));
     }
 

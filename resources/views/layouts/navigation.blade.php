@@ -188,6 +188,13 @@
                                     Profil
                                 </x-dropdown-link>
 
+                                <!-- Link ke Tampilan User -->
+                                <x-dropdown-link
+                                    :href="route('dashboard.user')"
+                                    class="block px-4 py-2 !text-white font-semibold hover:bg-[#1a1f3b]">
+                                    Tampilan User
+                                </x-dropdown-link>
+
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <x-dropdown-link 
