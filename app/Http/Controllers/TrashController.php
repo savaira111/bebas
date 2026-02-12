@@ -54,12 +54,12 @@ class TrashController extends Controller
         $type = strtolower($request->type);
 
         match ($type) {
-            'users'      => User::onlyTrashed()->findOrFail($id)->restore(),
+            'user', 'users' => User::onlyTrashed()->findOrFail($id)->restore(),
             'article', 'articles' => Article::onlyTrashed()->findOrFail($id)->restore(),
-            'albums'     => Album::onlyTrashed()->findOrFail($id)->restore(),
-            'galleries'  => Gallery::onlyTrashed()->findOrFail($id)->restore(),
+            'album', 'albums' => Album::onlyTrashed()->findOrFail($id)->restore(),
+            'gallery', 'galleries' => Gallery::onlyTrashed()->findOrFail($id)->restore(),
             'category', 'categories' => Category::onlyTrashed()->findOrFail($id)->restore(),
-            default => throw new \InvalidArgumentException("Type tidak dikenal: {$request->type}"),
+            default => throw new \InvalidArgumentException("Type tidak dikenal: {$type}"),
         };
 
         return back()->with('success', 'Data berhasil dipulihkan');

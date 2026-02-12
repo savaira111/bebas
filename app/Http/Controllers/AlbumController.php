@@ -11,7 +11,7 @@ class AlbumController extends Controller
     public function index()
     {
         return view('albums.index', [
-            'albums' => Album::withTrashed()->latest()->get()
+            'albums' => Album::latest()->get()
         ]);
     }
 
@@ -77,15 +77,15 @@ class AlbumController extends Controller
     }
 
     public function destroy($id)
-{
-    $album = Album::withTrashed()->findOrFail($id);
+    {
+        $album = Album::withTrashed()->findOrFail($id);
 
-    if (!$album->trashed()) {
-        $album->delete(); // soft delete
+        if (!$album->trashed()) {
+            $album->delete(); // soft delete
+        }
+
+        return redirect()->route('albums.index');
     }
-
-    return redirect()->route('albums.index');
-}
 
 
     public function trashed()
