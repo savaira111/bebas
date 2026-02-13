@@ -9,12 +9,25 @@ class Album extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'description', 'cover_image'];
+    protected $table = 'albums';
+    
+    protected $fillable = [
+        'name', 
+        'description', 
+        'cover_image'
+    ];
 
-    protected $dates = ['deleted_at'];
+    protected $dates = [
+        'created_at', 
+        'updated_at', 
+        'deleted_at'
+    ];
 
+    /**
+     * Get the photos for the album.
+     */
     public function photos()
     {
-        return $this->hasMany(AlbumPhoto::class);
+        return $this->hasMany(AlbumPhoto::class, 'album_id', 'id');
     }
 }

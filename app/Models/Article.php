@@ -20,7 +20,13 @@ class Article extends Model
         'meta_keywords',
         'meta_description',
         'published_at',
+        'category_id',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 
     protected $casts = [
         'deleted_at'   => 'datetime',

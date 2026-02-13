@@ -10,7 +10,7 @@ class CategoryController extends Controller
     // Tampilkan semua kategori (hanya yang belum dihapus)
     public function index()
     {
-        $categories = Category::latest()->get(); // exclude soft deleted
+        $categories = Category::latest()->paginate(10); // exclude soft deleted
         return view('categories.index', compact('categories'));
     }
 
@@ -31,8 +31,13 @@ class CategoryController extends Controller
 
         Category::create($request->only(['name', 'slug', 'description']));
 
+        if ($request->has('create_another')) {
+            return redirect()->route('categories.create')
+                ->with('success', 'Category created successfully. You can create another one.');
+        }
+
         return redirect()->route('categories.index')
-            ->with('success', 'Category berhasil ditambahkan!');
+            ->with('success', 'Category created successfully!');
     }
 
     // Form edit kategori
@@ -63,6 +68,13 @@ class CategoryController extends Controller
 
         return redirect()->route('categories.index')
             ->with('success', 'Category berhasil dihapus (soft delete)!');
+    }
+
+    // Menampilkan sampah kategori
+    public function trashed()
+    {
+        $categories = Category::onlyTrashed()->latest()->paginate(10);
+        return view('categories.trashed', compact('categories'));
     }
 
     // Restore kategori

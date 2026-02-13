@@ -14,11 +14,12 @@ use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\TrashController;
 use App\Models\User;
+use App\Http\Controllers\EbookController;
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | ROOT
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 
 Route::get('/', function () {
@@ -26,16 +27,16 @@ Route::get('/', function () {
 });
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | AUTH ROUTES
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | USER ROUTES
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
 
@@ -51,7 +52,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
 
-    // ✅ FIX ERROR ROUTE NOT FOUND
     Route::post('/profile/send-username-verification', [ProfileController::class, 'sendUsernameVerification'])
         ->name('profile.send-username-verification');
 });
@@ -63,9 +63,9 @@ Route::middleware(['auth', 'verified', 'profile.complete'])->group(function () {
 });
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | ADMIN ROUTES
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
 
@@ -92,9 +92,9 @@ Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
 });
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | SUPERADMIN ROUTES
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:superadmin'])->group(function () {
 
@@ -130,40 +130,87 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
 });
 
 /*
-|-------------------------------------------------------------------------- 
-| ALBUM & PRODUCT GALLERY ROUTES
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
+| ALBUM ROUTES - PASTI BISA
+|--------------------------------------------------------------------------
+*/
+/*
+|--------------------------------------------------------------------------
+| ALBUM ROUTES - PASTI BISA
+|--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+    // Soft delete routes (MUST BE BEFORE RESOURCE)
+    Route::get('/albums/trashed', [AlbumController::class, 'trashed'])->name('albums.trashed');
+    Route::post('/albums/{id}/restore', [AlbumController::class, 'restore'])->name('albums.restore');
+    Route::delete('/albums/{id}/force-delete', [AlbumController::class, 'forceDelete'])->name('albums.forceDelete');
+
+    // Photo routes
+    Route::post('/albums/{album}/photos', [AlbumPhotoController::class, 'store'])->name('albums.photos.store');
+    Route::delete('/photos/{photo}', [AlbumPhotoController::class, 'destroy'])->name('photos.destroy');
+
+    // Resource routes
     Route::resource('albums', AlbumController::class);
-    Route::post('/albums/{album}/photos', [AlbumPhotoController::class, 'store'])
-        ->name('albums.photos.store');
-    Route::delete('/photos/{photo}', [AlbumPhotoController::class, 'destroy'])
-        ->name('photos.destroy');
 });
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | GALLERIES
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+    Route::get('galleries/trashed', [GalleryController::class, 'trashed'])
+        ->name('galleries.trashed');
+
+    Route::post('galleries/{gallery}/restore', [GalleryController::class, 'restore'])
+        ->name('galleries.restore');
+
+    Route::delete('galleries/{gallery}/force-delete', [GalleryController::class, 'forceDelete'])
+        ->name('galleries.forceDelete');
+
     Route::resource('galleries', GalleryController::class);
 });
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | CATEGORY ROUTES
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+    Route::get('categories/trashed', [\App\Http\Controllers\CategoryController::class, 'trashed'])
+        ->name('categories.trashed');
+
+    Route::post('categories/{category}/restore', [\App\Http\Controllers\CategoryController::class, 'restore'])
+        ->name('categories.restore');
+
+    Route::delete('categories/{category}/force-delete', [\App\Http\Controllers\CategoryController::class, 'forceDelete'])
+        ->name('categories.forceDelete');
+
     Route::resource('categories', \App\Http\Controllers\CategoryController::class);
 });
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
+| EBOOK ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
+    Route::get('ebooks/trashed', [EbookController::class, 'trashed'])
+        ->name('ebooks.trashed');
+
+    Route::post('ebooks/{id}/restore', [EbookController::class, 'restore'])
+        ->name('ebooks.restore');
+
+    Route::delete('ebooks/{id}/force-delete', [EbookController::class, 'forceDelete'])
+        ->name('ebooks.forceDelete');
+
+    Route::resource('ebooks', EbookController::class);
+});
+
+/*
+|--------------------------------------------------------------------------
 | REALTIME CHECK USERNAME & EMAIL (SUPERADMIN)
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->post('/superadmin/check-username', function (Request $request) {
     return response()->json([
@@ -178,9 +225,9 @@ Route::middleware(['auth'])->post('/superadmin/check-email', function (Request $
 })->name('superadmin.check.email');
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | SOCIAL LOGIN
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
 Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
     ->name('social.redirect');
@@ -189,63 +236,39 @@ Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'
     ->name('social.callback');
 
 /*
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 | ARTICLES
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
 */
-Route::resource('articles', ArticleController::class);
-
-Route::post('articles/{id}/publish', [ArticleController::class, 'publish'])
+Route::post('articles/{article}/publish', [ArticleController::class, 'publish'])
     ->name('articles.publish');
 
-/* 🔥 TAMBAHAN SOFT DELETE (SAMPAH) */
-Route::get('articles-trashed', [ArticleController::class, 'trashed'])
+Route::get('articles/trashed', [ArticleController::class, 'trashed'])
     ->name('articles.trashed');
 
-Route::post('articles/{id}/restore', [ArticleController::class, 'restore'])
+Route::post('articles/{article}/restore', [ArticleController::class, 'restore'])
     ->name('articles.restore');
 
-Route::delete('articles/{id}/force', [ArticleController::class, 'forceDelete'])
+Route::delete('articles/{article}/force-delete', [ArticleController::class, 'forceDelete'])
     ->name('articles.forceDelete');
 
-/*
-|-------------------------------------------------------------------------- 
-| ALBUMS – SOFT DELETE
-|-------------------------------------------------------------------------- 
-*/
-Route::get('albums-trashed', [AlbumController::class, 'trashed'])
-    ->name('albums.trashed');
+Route::resource('articles', ArticleController::class);
 
-Route::post('albums/{id}/restore', [AlbumController::class, 'restore'])
-    ->name('albums.restore');
-
-Route::delete('albums/{id}/force', [AlbumController::class, 'forceDelete'])
-    ->name('albums.forceDelete');
 
 /*
-|-------------------------------------------------------------------------- 
-| GALLERIES – SOFT DELETE
-|-------------------------------------------------------------------------- 
+|--------------------------------------------------------------------------
+| PRODUCTS ROUTES
+|--------------------------------------------------------------------------
 */
-Route::get('galleries-trashed', [GalleryController::class, 'trashed'])
-    ->name('galleries.trashed');
+Route::middleware(['auth'])->group(function () {
+    Route::get('products/trashed', [\App\Http\Controllers\ProductController::class, 'trashed'])
+        ->name('products.trashed');
 
-Route::post('galleries/{id}/restore', [GalleryController::class, 'restore'])
-    ->name('galleries.restore');
+    Route::post('products/{product}/restore', [\App\Http\Controllers\ProductController::class, 'restore'])
+        ->name('products.restore');
 
-Route::delete('galleries/{id}/force', [GalleryController::class, 'forceDelete'])
-    ->name('galleries.forceDelete');
+    Route::delete('products/{product}/force-delete', [\App\Http\Controllers\ProductController::class, 'forceDelete'])
+        ->name('products.forceDelete');
 
-/*
-|-------------------------------------------------------------------------- 
-| CATEGORIES – SOFT DELETE
-|-------------------------------------------------------------------------- 
-*/
-Route::get('categories-trashed', [\App\Http\Controllers\CategoryController::class, 'trashed'])
-    ->name('categories.trashed');
-
-Route::post('categories/{id}/restore', [\App\Http\Controllers\CategoryController::class, 'restore'])
-    ->name('categories.restore');
-
-Route::delete('categories/{id}/force', [\App\Http\Controllers\CategoryController::class, 'forceDelete'])
-    ->name('categories.forceDelete');
+    Route::resource('products', \App\Http\Controllers\ProductController::class);
+});

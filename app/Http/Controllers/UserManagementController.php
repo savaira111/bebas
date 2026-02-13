@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class UserManagementController extends Controller
 {
@@ -24,7 +25,7 @@ class UserManagementController extends Controller
             $query->where('role', $request->role);
         }
 
-        $users = $query->latest()->get();
+        $users = $query->latest()->paginate(10);
 
         return view('superadmin.users.index', compact('users'));
     }
@@ -45,9 +46,20 @@ class UserManagementController extends Controller
             'username' => ['required', 'string', 'regex:/^\S+$/u', 'max:255', 'unique:users'],
             'email' => 'required|email|max:255|unique:users',
             'role' => 'required|in:admin,superadmin,user',
-            'password' => 'required|min:6|confirmed',
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
         ], [
             'username.regex' => 'Usernames cannot contain spaces.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.mixed_case' => 'Password harus mengandung huruf besar dan kecil.',
+            'password.numbers' => 'Password harus mengandung angka.',
+            'password.symbols' => 'Password harus mengandung simbol.',
         ]);
 
         User::create([
@@ -83,27 +95,41 @@ class UserManagementController extends Controller
         $request->validate([
             'name'      => 'required|string|max:255',
             'username'  => ['required','string','regex:/^\S+$/u','max:255','unique:users,username,' . $user->id],
-            'email'     => 'required|email|unique:users,email,' . $user->id,
+            'email'     => 'required|email|max:255|unique:users,email,' . $user->id,
             'role'      => 'required|in:admin,user,superadmin',
+            'password'  => [
+                'nullable',
+                'confirmed',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
         ], [
             'username.regex' => 'Username tidak boleh mengandung spasi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.mixed_case' => 'Password harus mengandung huruf besar dan kecil.',
+            'password.numbers' => 'Password harus mengandung angka.',
+            'password.symbols' => 'Password harus mengandung simbol.',
         ]);
 
+        $data = [
+            'name'     => $request->name,
+            'username' => $request->username,
+            'email'    => $request->email,
+        ];
+
         if (auth()->user()->role === 'admin') {
-            $user->update([
-                'name'     => $request->name,
-                'username' => $request->username,
-                'email'    => $request->email,
-                'role'     => 'user',
-            ]);
+            $data['role'] = 'user';
         } else {
-            $user->update([
-                'name'     => $request->name,
-                'username' => $request->username,
-                'email'    => $request->email,
-                'role'     => $request->role,
-            ]);
+            $data['role'] = $request->role;
         }
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $user->update($data);
 
         return redirect()
             ->route('superadmin.users.index')

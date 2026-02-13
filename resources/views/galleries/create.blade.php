@@ -1,150 +1,92 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-white">Tambah Gallery</h2>
+        <h2 class="font-semibold text-2xl text-gray-800 leading-tight luxury-gold-text" style="font-family: 'Playfair Display', serif;">
+            {{ __('Add New Image') }}
+        </h2>
     </x-slot>
 
-    <div class="py-10 max-w-xl mx-auto">
-        <form method="POST" action="{{ route('galleries.store') }}"
-              enctype="multipart/form-data"
-              class="bg-[#212844] p-6 rounded-xl text-white space-y-4" id="galleryForm">
-            @csrf
+    <div class="py-12">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl rounded-3xl border border-gray-50 p-8">
+                
+                <form action="{{ route('galleries.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
 
-            {{-- Judul --}}
-            <div>
-                <label class="block mb-1">Judul</label>
-                <input type="text" name="title"
-                       class="w-full bg-[#2a3155] rounded p-2"
-                       required>
-            </div>
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <!-- Title -->
+                            <div>
+                                <label for="title" class="block text-sm font-medium text-gray-700">Image Title</label>
+                                <input type="text" name="title" id="title" value="{{ old('title') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50" required placeholder="e.g. Summer Collection">
+                                @error('title') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
 
-            {{-- Tipe --}}
-            <div>
-                <label class="block mb-1">Tipe</label>
-                <select name="type" id="type"
-                        class="w-full bg-[#2a3155] rounded p-2"
-                        required>
-                    <option value="foto">Foto</option>
-                    <option value="video">Video</option>
-                    <option value="balance">Balance</option>
-                </select>
-            </div>
+                            <!-- Category -->
+                            <div>
+                                <label for="category_id" class="block text-sm font-medium text-gray-700">Category</label>
+                                <select name="category_id" id="category_id" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50" required>
+                                    <option value="">Select Category</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('category_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
 
-            {{-- Kategori --}}
-            <div>
-                <label class="block mb-1">Kategori</label>
-                <select name="category_id"
-                        class="w-full bg-[#2a3155] rounded p-2"
-                        required>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}">
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+                        <!-- Description -->
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea name="description" id="description" rows="3" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50">{{ old('description') }}</textarea>
+                            @error('description') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
 
-            {{-- Album --}}
-            <div>
-                <label class="block mb-1">Album</label>
-                <select name="album_id"
-                        class="w-full bg-[#2a3155] rounded p-2">
-                    @foreach($albums as $album)
-                        <option value="{{ $album->id }}">
-                            {{ $album->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            {{-- Deskripsi --}}
-            <div>
-                <label class="block mb-1">Deskripsi</label>
-                <textarea name="description"
-                          rows="3"
-                          class="w-full bg-[#2a3155] rounded p-2"></textarea>
-            </div>
-
-            {{-- File Foto / Video Dinamis --}}
-            <div>
-                <label class="block mb-1">File (Foto / Video) — Maks 10</label>
-                <div id="file-inputs" class="space-y-2">
-                    <div class="flex gap-2 items-center">
-                        <input type="file" name="images[]" class="w-full text-sm file-input">
-                        <a href="#" target="_blank" class="text-blue-400 underline browse-link hidden">Lihat</a>
-                        <button type="button" class="add-input px-2 py-1 bg-gray-500 rounded hover:bg-gray-600">+</button>
+                         <!-- Image Upload -->
+                        <div>
+                            <label for="image" class="block text-sm font-medium text-gray-700">Image File</label>
+                            <div class="mt-2 flex justify-center rounded-xl border-2 border-dashed border-gray-300 px-6 pt-5 pb-6 bg-gray-50 hover:bg-white transition">
+                                <div class="space-y-1 text-center">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <div class="flex text-sm text-gray-600 justify-center">
+                                        <label for="image" class="relative cursor-pointer rounded-md bg-white font-medium text-red-400 focus-within:outline-none focus-within:ring-2 focus-within:ring-red-500 focus-within:ring-offset-2 hover:text-red-500">
+                                            <span>Upload a file</span>
+                                            <input id="image" name="image" type="file" class="sr-only" onchange="previewImage(event)" required>
+                                        </label>
+                                    </div>
+                                    <p class="text-xs text-gray-500">PNG, JPG up to 2MB</p>
+                                </div>
+                            </div>
+                            <div id="image-preview" class="mt-4 hidden text-center">
+                                <img src="" alt="Preview" class="mx-auto h-48 w-auto rounded-lg shadow-md object-cover">
+                            </div>
+                            @error('image') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
                     </div>
-                </div>
-               
-            </div>
 
-            <div class="flex gap-2 pt-2">
-                <button class="w-1/2 py-2 bg-green-600 rounded hover:bg-green-700">
-                    Simpan
-                </button>
-                <a href="{{ route('galleries.index') }}"
-                   class="w-1/2 py-2 text-center bg-gray-500 rounded hover:bg-gray-600">
-                    Cancel
-                </a>
+                    <div class="mt-10 flex items-center justify-end space-x-4 border-t border-gray-100 pt-6">
+                        <a href="{{ route('galleries.index') }}" class="px-6 py-3 rounded-xl text-gray-600 bg-gray-100 hover:bg-gray-200 font-medium transition">
+                            Cancel
+                        </a>
+                        <button type="submit" class="px-8 py-3 rounded-xl text-white font-medium shadow-lg hover:shadow-xl transform transition hover:-translate-y-0.5" style="background: linear-gradient(135deg, #d4a5a5 0%, #c29595 100%);">
+                            Upload Image
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 
     <script>
-        const maxFiles = 10;
-        const fileInputsContainer = document.getElementById('file-inputs');
-        const typeSelect = document.getElementById('type');
-
-        fileInputsContainer.addEventListener('click', function(e){
-            if(e.target.classList.contains('add-input')){
-                const currentInputs = fileInputsContainer.querySelectorAll('input[type="file"]').length;
-                if(currentInputs >= maxFiles){
-                    alert('Maksimal 10 file!');
-                    return;
-                }
-                const newDiv = document.createElement('div');
-                newDiv.classList.add('flex','gap-2','items-center');
-                newDiv.innerHTML = `
-                    <input type="file" name="images[]" class="w-full text-sm file-input">
-                    <a href="#" target="_blank" class="text-blue-400 underline browse-link hidden">Lihat</a>
-                    <button type="button" class="remove-input px-2 py-1 bg-red-500 rounded hover:bg-red-600">-</button>
-                `;
-                fileInputsContainer.appendChild(newDiv);
-            }
-
-            if(e.target.classList.contains('remove-input')){
-                e.target.parentElement.remove();
-            }
-        });
-
-        fileInputsContainer.addEventListener('change', function(e){
-            if(e.target.classList.contains('file-input')){
-                const file = e.target.files[0];
-                const link = e.target.nextElementSibling;
-                const type = typeSelect.value;
-
-                if(file){
-                    const fileType = file.type;
-                    // Validasi tipe file
-                    if(type === 'foto' && !fileType.startsWith('image/')){
-                        alert('Hanya file gambar yang diperbolehkan untuk tipe foto!');
-                        e.target.value = '';
-                        link.classList.add('hidden');
-                        return;
-                    }
-                    if(type === 'video' && !fileType.startsWith('video/')){
-                        alert('Hanya file video yang diperbolehkan untuk tipe video!');
-                        e.target.value = '';
-                        link.classList.add('hidden');
-                        return;
-                    }
-                    // jika balance, boleh keduanya
-
-                    link.href = URL.createObjectURL(file);
-                    link.classList.remove('hidden');
-                } else {
-                    link.classList.add('hidden');
-                }
-            }
-        });
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var output = document.querySelector('#image-preview img');
+                output.src = reader.result;
+                document.getElementById('image-preview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
     </script>
 </x-app-layout>

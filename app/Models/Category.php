@@ -12,4 +12,9 @@ class Category extends Model
     protected $fillable = ['name', 'description', 'slug'];
 
     protected $dates = ['deleted_at'];
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

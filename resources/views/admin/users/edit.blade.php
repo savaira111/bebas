@@ -1,135 +1,201 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-2xl text-white leading-tight">Edit Pengguna</h2>
+        <h2 class="font-semibold text-2xl text-gray-800 leading-tight luxury-gold-text" style="font-family: 'Playfair Display', serif;">
+            {{ __('Edit User') }}
+        </h2>
     </x-slot>
 
-            <h2 class="text-2xl font-bold text-center mb-6">
-                Edit pengguna
-            </h2>
-
-    <style>
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover,
-        input:-webkit-autofill:focus {
-            -webkit-box-shadow: 0 0 0px 1000px #212844 inset !important;
-            -webkit-text-fill-color: #ffffff !important;
-            border: 1px solid #ffffff !important;
-            transition: background-color 9999s ease-in-out 0s;
-        }
-    </style>
-
-    <div class="py-12" style="background-color: #F0E8D5; min-height: 100vh;">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-[#212844] text-white shadow-2xl rounded-2xl p-8">
-
-                <form action="{{ route('admin.users.update', $user->id) }}" method="POST" class="space-y-6">
+    <div class="py-12">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl rounded-3xl border border-gray-50 p-8">
+                
+                <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
-                    <!-- Nama -->
-                    <div>
-                        <label class="block font-semibold mb-1">Nama</label>
-                        <input type="text" name="name"
-                            value="{{ old('name', $user->name) }}"
-                            class="w-full px-4 py-2 rounded-lg bg-[#212844] border border-white text-white"
-                            placeholder="Masukkan nama lengkap" required>
-                    </div>
+                    <div class="space-y-6">
+                        <!-- Name -->
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" name="name" id="name"
+                                   value="{{ old('name', $user->name) }}"
+                                   class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50"
+                                   required>
+                            @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
 
-                    <!-- Username -->
-                    <div>
-                        <label class="block font-semibold mb-1">Username</label>
-                        <input type="text" name="username"
-                            value="{{ old('username', $user->username) }}"
-                            class="w-full px-4 py-2 rounded-lg bg-[#212844] border border-white text-white"
-                            placeholder="Masukkan username">
-                    </div>
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                            <input type="email" name="email" id="email"
+                                   value="{{ old('email', $user->email) }}"
+                                   class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50"
+                                   required>
+                            <small id="emailError" class="text-red-500 text-xs hidden">Email sudah terdaftar</small>
+                            @error('email') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
 
-                    <!-- Email -->
-                    <div>
-                        <label class="block font-semibold mb-1">Email</label>
-                        <input type="email" name="email"
-                            value="{{ old('email', $user->email) }}"
-                            class="w-full px-4 py-2 rounded-lg bg-[#212844] border border-white text-white"
-                            placeholder="Masukkan email" required>
-                    </div>
+                        <!-- Role -->
+                        <div>
+                            <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+                            <select name="role" id="role"
+                                    class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50"
+                                    required>
+                                <option value="">Select Role</option>
+                                <option value="user" {{ old('role', $user->role) === 'user' ? 'selected' : '' }}>User</option>
+                                <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="superadmin" {{ old('role', $user->role) === 'superadmin' ? 'selected' : '' }}>Super Admin</option>
+                            </select>
+                            @error('role') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
 
-                    <!-- Password -->
-                    <div class="relative">
-                        <label class="block font-semibold mb-1">
-                            Password <span class="text-gray-300 text-sm">(Kosongkan jika tidak ingin mengubah)</span>
-                        </label>
+                        <div class="border-t border-gray-100 pt-6">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4" style="font-family: 'Playfair Display', serif;">
+                                Change Password (Optional)
+                            </h3>
 
-                        <input type="password" id="password" name="password"
-                            class="w-full px-4 py-2 rounded-lg bg-[#212844] border border-white text-white"
-                            placeholder="Masukkan password baru">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Password -->
+                                <div class="relative">
+                                    <label for="password" class="block text-sm font-medium text-gray-700">
+                                        New Password
+                                    </label>
+                                    <input type="password" name="password" id="password"
+                                           autocomplete="new-password"
+                                           class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50 pr-12">
+                                    <button type="button"
+                                            onclick="togglePassword('password', this)"
+                                            class="absolute right-3 top-9 text-gray-500">
+                                        👁
+                                    </button>
 
-                        <button type="button" id="toggle-password"
-                            class="absolute right-3 top-9 text-gray-300">👁</button>
+                                    <div class="flex gap-2 mt-3">
+                                        <div class="h-2 w-1/5 bg-gray-300 rounded" id="bar-length"></div>
+                                        <div class="h-2 w-1/5 bg-gray-300 rounded" id="bar-uppercase"></div>
+                                        <div class="h-2 w-1/5 bg-gray-300 rounded" id="bar-lowercase"></div>
+                                        <div class="h-2 w-1/5 bg-gray-300 rounded" id="bar-number"></div>
+                                        <div class="h-2 w-1/5 bg-gray-300 rounded" id="bar-symbol"></div>
+                                    </div>
 
-                        <!-- RULES -->
-                        <div id="password-rules-wrapper" class="hidden mt-3">
-                            <ul class="text-xs space-y-1 text-white">
-                                <li data-rule="length">• Minimal 8 karakter</li>
-                                <li data-rule="uppercase">• Mengandung huruf besar</li>
-                                <li data-rule="lowercase">• Mengandung huruf kecil</li>
-                                <li data-rule="number">• Mengandung angka</li>
-                                <li data-rule="symbol">• Mengandung simbol</li>
-                            </ul>
+                                    <ul class="mt-2 text-xs space-y-1">
+                                        <li data-rule="length" class="text-red-500 hidden">• Minimal 8 karakter</li>
+                                        <li data-rule="uppercase" class="text-red-500 hidden">• Huruf besar</li>
+                                        <li data-rule="lowercase" class="text-red-500 hidden">• Huruf kecil</li>
+                                        <li data-rule="number" class="text-red-500 hidden">• Angka</li>
+                                        <li data-rule="symbol" class="text-red-500 hidden">• Simbol</li>
+                                    </ul>
+
+                                    @error('password') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                </div>
+
+                                <!-- Confirm Password -->
+                                <div class="relative">
+                                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">
+                                        Confirm New Password
+                                    </label>
+                                    <input type="password" name="password_confirmation"
+                                           id="password_confirmation"
+                                           autocomplete="new-password"
+                                           class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50 pr-12">
+                                    <button type="button"
+                                            onclick="togglePassword('password_confirmation', this)"
+                                            class="absolute right-3 top-9 text-gray-500">
+                                        👁
+                                    </button>
+                                    <small id="confirmError" class="text-red-500 text-xs hidden">Password tidak sama</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="flex gap-4 justify-center">
-                        <button class="px-6 py-2 bg-green-600 rounded-xl text-white font-semibold">
-                            Perbarui Pengguna
-                        </button>
+                    <div class="mt-10 flex items-center justify-end space-x-4">
                         <a href="{{ route('admin.users.index') }}"
-                           class="px-6 py-2 bg-gray-500 rounded-xl text-white font-semibold">
-                            Batal
+                           class="px-6 py-3 rounded-xl text-gray-600 bg-gray-100 hover:bg-gray-200 font-medium transition">
+                            Cancel
                         </a>
-                    </div>
 
+                        <button type="submit" id="submitBtn"
+                                class="px-8 py-3 rounded-xl text-white font-medium shadow-lg hover:shadow-xl transform transition hover:-translate-y-0.5"
+                                style="background: linear-gradient(135deg, #d4a5a5 0%, #c29595 100%);">
+                            Update User
+                        </button>
+                    </div>
                 </form>
+
             </div>
         </div>
     </div>
 
 <script>
-const pw = document.getElementById('password');
-const wrapper = document.getElementById('password-rules-wrapper');
-const rules = document.querySelectorAll('[data-rule]');
-const toggle = document.getElementById('toggle-password');
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'password' ? '👁' : '🙈';
+}
 
-const checks = {
-    length: v => v.length >= 8,
-    uppercase: v => /[A-Z]/.test(v),
-    lowercase: v => /[a-z]/.test(v),
-    number: v => /[0-9]/.test(v),
-    symbol: v => /[\W_]/.test(v)
+const password = document.getElementById('password');
+const confirm = document.getElementById('password_confirmation');
+const confirmError = document.getElementById('confirmError');
+
+const bars = {
+    length: document.getElementById('bar-length'),
+    uppercase: document.getElementById('bar-uppercase'),
+    lowercase: document.getElementById('bar-lowercase'),
+    number: document.getElementById('bar-number'),
+    symbol: document.getElementById('bar-symbol'),
 };
 
-pw.addEventListener('focus', () => {
-    if (pw.value) wrapper.classList.remove('hidden');
-});
+const rules = {
+    length: document.querySelector('[data-rule="length"]'),
+    uppercase: document.querySelector('[data-rule="uppercase"]'),
+    lowercase: document.querySelector('[data-rule="lowercase"]'),
+    number: document.querySelector('[data-rule="number"]'),
+    symbol: document.querySelector('[data-rule="symbol"]'),
+};
 
-pw.addEventListener('input', () => {
-    const v = pw.value;
-
+function validatePassword() {
+    const v = password.value;
     if (!v) {
-        wrapper.classList.add('hidden');
-        rules.forEach(r => r.classList.remove('hidden'));
-        return;
+        Object.values(bars).forEach(b => b.style.background = '#D1D5DB');
+        Object.values(rules).forEach(r => r.classList.add('hidden'));
+        return true;
     }
 
-    wrapper.classList.remove('hidden');
+    function checkRule(cond, bar, rule) {
+        if (cond) {
+            bar.style.background = 'lightgreen';
+            rule.classList.add('hidden');
+        } else {
+            bar.style.background = '#D1D5DB';
+            rule.classList.remove('hidden');
+        }
+    }
 
-    rules.forEach(rule => {
-        const key = rule.dataset.rule;
-        rule.classList.toggle('hidden', checks[key](v));
-    });
-});
+    checkRule(v.length >= 8, bars.length, rules.length);
+    checkRule(/[A-Z]/.test(v), bars.uppercase, rules.uppercase);
+    checkRule(/[a-z]/.test(v), bars.lowercase, rules.lowercase);
+    checkRule(/[0-9]/.test(v), bars.number, rules.number);
+    checkRule(/[^A-Za-z0-9]/.test(v), bars.symbol, rules.symbol);
 
-toggle.onclick = () => {
-    pw.type = pw.type === 'password' ? 'text' : 'password';
-};
+    return Object.values(bars).every(b => b.style.background === 'lightgreen');
+}
+
+function validateConfirm() {
+    if (!password.value && !confirm.value) {
+        confirmError.classList.add('hidden');
+        return true;
+    }
+
+    if (confirm.value === password.value) {
+        confirmError.classList.add('hidden');
+        return true;
+    } else {
+        confirmError.classList.remove('hidden');
+        return false;
+    }
+}
+
+password.addEventListener('input', validatePassword);
+confirm.addEventListener('input', validateConfirm);
 </script>
 </x-app-layout>

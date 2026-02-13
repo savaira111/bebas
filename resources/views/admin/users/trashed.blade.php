@@ -1,177 +1,134 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-2xl text-white leading-tight">
-            Pengguna Terhapus
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-2xl text-gray-800 leading-tight luxury-gold-text" style="font-family: 'Playfair Display', serif;">
+                {{ __('Trashed Users') }}
+            </h2>
+            <a href="{{ route('admin.users.index') }}" class="px-6 py-2.5 rounded-full text-gray-600 font-medium tracking-wide border border-gray-300 hover:bg-gray-50 transition">
+                &larr; Back to Users
+            </a>
+        </div>
     </x-slot>
 
-    <div class="py-12" style="background-color:#F0E8D5; min-height:100vh;">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-
-            <!-- Tombol Kembali -->
-            <a href="{{ route('superadmin.users.index') }}"
-               class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                Kembali
-            </a>
-
-            <!-- Form Pencarian -->
-            <form method="GET" class="flex gap-2 mt-4 mb-2">
-                <input type="text"
-                       name="search"
-                       value="{{ request('search') }}"
-                       placeholder="Cari username atau email..."
-                       class="flex-1 px-3 py-2 rounded-lg bg-[#2a3155] text-white placeholder-gray-300 border border-transparent focus:border-[#3b4470] outline-none">
-                <button type="submit"
-                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
-                    Cari
-                </button>
-            </form>
-
-            <div class="bg-[#212844] text-white rounded-xl p-4 overflow-x-auto">
-                <table class="min-w-full text-sm">
+    <div class="py-6">
+        <div class="bg-white overflow-hidden shadow-xl rounded-3xl border border-gray-50">
+            <div class="overflow-x-auto">
+                <table class="w-full whitespace-nowrap">
                     <thead>
-                        <tr class="border-b border-gray-600">
-                            <th class="text-left py-2">No</th>
-                            <th class="text-left py-2">Username</th>
-                            <th class="text-left py-2">Email</th>
-                            <th class="text-left py-2">Role</th>
-                            <th class="text-left py-2">Dihapus Pada</th>
-                            <th class="text-left py-2">Auto Hapus Dalam</th>
-                            <th class="text-left py-2">Aksi</th>
+                        <tr class="text-left font-bold tracking-wide bg-gray-50 border-b border-gray-100">
+                            <th class="px-8 py-5 uppercase text-xs text-gray-500">No</th>
+                            <th class="px-8 py-5 uppercase text-xs text-gray-500">User</th>
+                            <th class="px-8 py-5 uppercase text-xs text-gray-500">Deleted At</th>
+                            <th class="px-8 py-5 text-right uppercase text-xs text-gray-500">Actions</th>
                         </tr>
                     </thead>
-
-                    <tbody>
+                    <tbody class="divide-y divide-gray-100">
                         @forelse($users as $user)
-
-                            {{-- Superadmin tidak ditampilkan --}}
-                            @if($user->role === 'superadmin')
-                                @continue
-                            @endif
-
-                            @php
-                                $expiresAt = $user->deleted_at->copy()->addDays(7);
-                                $remaining = now()->lt($expiresAt)
-                                    ? $expiresAt->diff(now())
-                                    : null;
-                            @endphp
-
-                            <tr class="border-b border-gray-700 hover:bg-[#2a3155] transition">
-                                <td class="py-2">{{ $loop->iteration }}</td>
-                                <td class="py-2">{{ $user->username }}</td>
-                                <td class="py-2">{{ $user->email }}</td>
-
-                                <td class="py-2">
-                                    @if($user->role === 'admin')
-                                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-400 text-black">
-                                            Admin
-                                        </span>
-                                    @elseif($user->role === 'user')
-                                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-500 text-white">
-                                            User
-                                        </span>
-                                    @endif
-                                </td>
-
-                                <td class="py-2">
-                                    {{ $user->deleted_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }}
-                                </td>
-
-                                <td class="py-2 text-sm">
-                                    @if($remaining)
-                                        <span class="text-green-400 font-semibold">
-                                            {{ $remaining->d }} hari
-                                            {{ $remaining->h }} jam
-                                            {{ $remaining->i }} menit
-                                        </span>
-                                        <div class="text-xs text-gray-400">
-                                            Auto hapus:
-                                            {{ $expiresAt->timezone('Asia/Jakarta')->format('d M Y, H:i') }}
+                            <tr class="hover:bg-gray-50/50 transition duration-150">
+                                <td class="px-8 py-4 text-gray-500 font-medium">{{ $loop->iteration }}</td>
+                                <td class="px-8 py-4">
+                                     <div class="flex items-center">
+                                        <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold mr-3">
+                                            {{ substr($user->name, 0, 1) }}
                                         </div>
-                                    @else
-                                        <span class="text-red-400 font-semibold">
-                                            Kedaluwarsa
-                                        </span>
-                                    @endif
+                                        <div>
+                                            <div class="text-sm font-semibold text-gray-600">{{ $user->name }}</div>
+                                            <div class="text-xs text-gray-400">{{ $user->email }}</div>
+                                        </div>
+                                    </div>
                                 </td>
+                                <td class="px-8 py-4 text-sm text-gray-500">
+                                    {{ $user->deleted_at ? $user->deleted_at->format('d M Y H:i') : '-' }}
+                                </td>
+                                <td class="px-8 py-4 text-right text-sm font-medium">
+                                    <div class="flex items-center justify-end space-x-3">
+                                        <button onclick="confirmRestore('{{ $user->id }}')" class="text-yellow-600 hover:text-yellow-700 transition font-medium flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                            Restore
+                                        </button>
+                                        <form id="restore-form-{{ $user->id }}" action="{{ route('admin.users.restore', $user->id) }}" method="POST" class="hidden">
+                                            @csrf
+                                            @method('PUT')
+                                        </form>
 
-                                <td class="py-2 flex gap-2">
-                                    <!-- Restore -->
-                                    <button
-                                        onclick="confirmRestore('{{ route('superadmin.users.restore', $user->id) }}')"
-                                        class="px-3 py-1 bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 transition">
-                                        Pulihkan
-                                    </button>
+                                        <button onclick="confirmForceDelete('{{ $user->id }}')" class="text-red-400 hover:text-red-600 transition font-medium flex items-center gap-1 ml-4">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            Delete Permanently
+                                        </button>
+                                        <form id="force-delete-form-{{ $user->id }}" action="{{ route('admin.users.force-delete', $user->id) }}" method="POST" class="hidden">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
-
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-gray-300">
-                                    Tempat sampah kosong.
+                                <td colspan="4" class="px-8 py-10 text-center text-gray-400 italic">
+                                    No deleted users found in trash.
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
 
-    <!-- SweetAlert2 -->
+    @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
-        function confirmRestore(route) {
+        function confirmRestore(id) {
             Swal.fire({
-                title: 'Pulihkan pengguna?',
-                text: 'Pengguna ini akan dikembalikan ke sistem.',
+                title: 'Restore User?',
+                text: "The user will be restored and active again.",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#16a34a',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Ya, pulihkan'
+                confirmButtonColor: '#bfa05f',
+                cancelButtonColor: '#f3f4f6',
+                confirmButtonText: 'Yes, restore!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'text-white px-4 py-2 rounded-lg',
+                    cancelButton: 'text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100'
+                },
+                background: '#fff',
+                color: '#555'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    let form = document.createElement('form');
-                    form.action = route;
-                    form.method = 'POST';
-
-                    form.innerHTML = `
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    `;
-
-                    document.body.appendChild(form);
-                    form.submit();
+                    document.getElementById('restore-form-' + id).submit();
                 }
-            });
+            })
         }
 
-        function confirmDelete(route) {
-            Swal.fire({
-                title: 'Apakah kamu yakin?',
-                text: 'Pengguna ini akan dihapus permanen!',
+        function confirmForceDelete(id) {
+             Swal.fire({
+                title: 'Delete Permanently?',
+                text: "This action CANNOT be undone. User data will be lost forever.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Ya, hapus!'
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#f3f4f6',
+                confirmButtonText: 'Yes, delete forever!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+                 customClass: {
+                    confirmButton: 'text-white px-4 py-2 rounded-lg',
+                    cancelButton: 'text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100'
+                },
+                background: '#fff',
+                color: '#555'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    let form = document.createElement('form');
-                    form.action = route;
-                    form.method = 'POST';
-
-                    form.innerHTML = `
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="_method" value="DELETE">
-                    `;
-
-                    document.body.appendChild(form);
-                    form.submit();
+                    document.getElementById('force-delete-form-' + id).submit();
                 }
-            });
+            })
         }
     </script>
+    <style>
+        .swal2-title { font-family: 'Playfair Display', serif !important; }
+        .swal2-popup { border-radius: 20px !important; }
+    </style>
+    @endpush
 </x-app-layout>

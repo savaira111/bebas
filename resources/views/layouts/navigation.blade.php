@@ -1,263 +1,196 @@
-<nav x-data="{ open: false }" class="bg-[#212844] border-b border-[#1a1f33]">
+<nav x-data="{ open: false }" class="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
 
     <!-- Menu Navigasi Utama -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
+        <div class="flex justify-between h-20">
+            <div class="flex items-center">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ url('/') }}">
-                        <img src="/images/logo.png" class="h-8 w-auto" alt="Logo">
+                    <a href="{{ url('/') }}" class="group flex items-center gap-2">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#d4a5a5] to-[#c29595] flex items-center justify-center text-white font-serif font-bold text-xl shadow-lg group-hover:shadow-pink-200 transition-all duration-300">
+                            L
+                        </div>
+                        <span class="font-serif text-xl text-gray-800 tracking-wide font-medium group-hover:text-[#d4a5a5] transition-colors">Luxury<span class="text-[#d4a5a5]">Beauty</span></span>
                     </a>
                 </div>
 
                 <!-- Link Navigasi -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-1 sm:-my-px sm:ms-10 sm:flex items-center h-full">
                     @auth
+                        @php
+                            $navClasses = "inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out h-full border-transparent text-gray-500 hover:text-[#d4a5a5] hover:border-[#d4a5a5] focus:outline-none focus:text-[#d4a5a5] focus:border-[#d4a5a5]";
+                            $activeClasses = "inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out h-full border-[#d4a5a5] text-[#c29595] focus:outline-none focus:border-[#d4a5a5]";
+                        @endphp
+
+                        <!-- ROLE: USER -->
                         @if(Auth::user()->role === 'user')
-                            <x-nav-link 
-                                :href="route('dashboard.user')" 
-                                :active="request()->routeIs('dashboard.user')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
+                            <a href="{{ route('dashboard.user') }}" class="{{ request()->routeIs('dashboard.user') ? $activeClasses : $navClasses }}">
                                 Dashboard
-                            </x-nav-link>
-
-                            <x-nav-link 
-                                :href="route('articles.index')" 
-                                :active="request()->routeIs('articles.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
+                            </a>
+                            <a href="{{ route('articles.index') }}" class="{{ request()->routeIs('articles.*') ? $activeClasses : $navClasses }}">
                                 Articles
-                            </x-nav-link>
-
-                            <x-nav-link 
-                                :href="route('galleries.index')" 
-                                :active="request()->routeIs('galleries.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
+                            </a>
+                            <a href="{{ route('galleries.index') }}" class="{{ request()->routeIs('galleries.*') ? $activeClasses : $navClasses }}">
                                 Galleries
-                            </x-nav-link>
+                            </a>
+                             <!-- Add other user links here -->
 
-                            <x-nav-link
-                                :href="route('categories.index')"
-                                :active="request()->routeIs('categories.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
-                                Categories
-                            </x-nav-link>
 
-                        @elseif(Auth::user()->role === 'admin')
-                            <x-nav-link 
-                                :href="route('dashboard.admin')" 
-                                :active="request()->routeIs('dashboard.admin')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
+                        <!-- ROLE: ADMIN & SUPERADMIN -->
+                        @elseif(Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin')
+                            
+                            @php
+                                $dashboardRoute = Auth::user()->role === 'superadmin' ? 'dashboard.superadmin' : 'dashboard.admin';
+                            @endphp
+
+                            <a href="{{ route($dashboardRoute) }}" class="{{ request()->routeIs($dashboardRoute) ? $activeClasses : $navClasses }}">
                                 Dashboard
-                            </x-nav-link>
+                            </a>
 
-                            <x-nav-link 
-                                :href="route('articles.index')" 
-                                :active="request()->routeIs('articles.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
-                                Articles
-                            </x-nav-link>
+                            <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? $activeClasses : $navClasses }}">
+                                Products
+                            </a>
 
-                            <x-nav-link 
-                                :href="route('albums.index')" 
-                                :active="request()->routeIs('albums.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
-                                Album Produk
-                            </x-nav-link>
-
-                            <x-nav-link 
-                                :href="route('galleries.index')" 
-                                :active="request()->routeIs('galleries.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
-                                Galleries
-                            </x-nav-link>
-
-                            <x-nav-link
-                                :href="route('categories.index')"
-                                :active="request()->routeIs('categories.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
+                            <a href="{{ route('categories.index') }}" class="{{ request()->routeIs('categories.*') ? $activeClasses : $navClasses }}">
                                 Categories
-                            </x-nav-link>
+                            </a>
 
-                            <x-nav-link 
-                                :href="route('admin.users.index')" 
-                                :active="request()->routeIs('admin.users.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
-                                Manajemen Pengguna
-                            </x-nav-link>
-
-                            <x-nav-link 
-                                :href="route('trash.index')" 
-                                :active="request()->routeIs('trash.index')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
-                                Sampah
-                            </x-nav-link>
-
-                        @elseif(Auth::user()->role === 'superadmin')
-                            <x-nav-link 
-                                :href="route('dashboard.superadmin')" 
-                                :active="request()->routeIs('dashboard.superadmin')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
-                                Dashboard
-                            </x-nav-link>
-
-                            <x-nav-link 
-                                :href="route('articles.index')" 
-                                :active="request()->routeIs('articles.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
+                            <a href="{{ route('articles.index') }}" class="{{ request()->routeIs('articles.*') ? $activeClasses : $navClasses }}">
                                 Articles
-                            </x-nav-link>
+                            </a>
 
-                            <x-nav-link 
-                                :href="route('albums.index')" 
-                                :active="request()->routeIs('albums.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
-                                Album Produk
-                            </x-nav-link>
+                            <a href="{{ route('albums.index') }}" class="{{ request()->routeIs('albums.*') ? $activeClasses : $navClasses }}">
+                                Albums
+                            </a>
 
-                            <x-nav-link 
-                                :href="route('galleries.index')" 
-                                :active="request()->routeIs('galleries.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
+                            <a href="{{ route('galleries.index') }}" class="{{ request()->routeIs('galleries.*') ? $activeClasses : $navClasses }}">
                                 Galleries
-                            </x-nav-link>
+                            </a>
+                             <a href="{{ route('ebooks.index') }}" class="{{ request()->routeIs('ebooks.*') ? $activeClasses : $navClasses }}">
+                                E-Books
+                            </a>
 
-                            <x-nav-link
-                                :href="route('categories.index')"
-                                :active="request()->routeIs('categories.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
-                                Categories
-                            </x-nav-link>
+                            @if(Auth::user()->role === 'superadmin')
+                                <a href="{{ route('superadmin.users.index') }}" class="{{ request()->routeIs('superadmin.users.*') ? $activeClasses : $navClasses }}">
+                                    Users
+                                </a>
+                            @endif
+                            
+                            @if(Auth::user()->role === 'admin')
+                                <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? $activeClasses : $navClasses }}">
+                                    Users
+                                </a>
+                            @endif
 
-                            <x-nav-link 
-                                :href="route('superadmin.users.index')" 
-                                :active="request()->routeIs('superadmin.users.*')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
-                                Manajemen Pengguna
-                            </x-nav-link>
-
-                            <x-nav-link 
-                                :href="route('superadmin.users.trash.index')" 
-                                :active="request()->routeIs('superadmin.users.trash.index')"
-                                class="text-white font-semibold text-lg hover:bg-[#1a1f3b] px-3 py-1 rounded">
-                                Sampah
-                            </x-nav-link>
                         @endif
                     @endauth
-
-                    @guest
-                        <x-nav-link 
-                            :href="route('login')" 
-                            :active="request()->routeIs('login')"
-                            class="text-gray-200 hover:text-white">
-                            Masuk
-                        </x-nav-link>
-
-                        @if (Route::has('register'))
-                            <x-nav-link 
-                                :href="route('register')" 
-                                :active="request()->routeIs('register')"
-                                class="text-gray-200 hover:text-white">
-                                Daftar
-                            </x-nav-link>
-                        @endif
-                    @endguest
                 </div>
             </div>
 
-            <!-- Dropdown Pengaturan -->
-            @auth
-                <div class="hidden sm:flex sm:items-center sm:ms-6">
-                    <x-dropdown align="right" width="48">
-                        <x-slot name="trigger">
-                            <button class="flex items-center text-sm font-semibold text-white bg-[#212844] hover:bg-[#1a1f3b] px-3 py-1 rounded transition">
-                                <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('default-avatar.png') }}"
-                                     class="w-8 h-8 rounded-full border-2 border-white object-cover me-2">
-                                <div>{{ Auth::user()->name }}</div>
-                                <svg class="ms-1 h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                        </x-slot>
+            <!-- Settings Dropdown -->
+            <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- User Profile -->
+                 @auth
+                <div class="relative" x-data="{ open: false }" @click.away="open = false" @close.stop="open = false">
+                    <button @click="open = ! open" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150 gap-2">
+                        <img src="{{ Auth::user()->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&color=7F9CF5&background=EBF4FF' }}"
+                             class="h-9 w-9 rounded-full object-cover border-2 border-gray-100 shadow-sm" alt="{{ Auth::user()->name }}" />
+                        
+                        <div class="text-left hidden md:block">
+                            <div class="font-bold text-gray-800 font-serif">{{ Auth::user()->name }}</div>
+                            <div class="text-xs text-[#d4a5a5] font-semibold tracking-wider uppercase">{{ Auth::user()->role }}</div>
+                        </div>
 
-                        <x-slot name="content">
-                            <div class="bg-[#212844] rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
-                                <x-dropdown-link 
-                                    :href="route('profile.edit')" 
-                                    class="block px-4 py-2 !text-white font-semibold hover:bg-[#1a1f3b]">
-                                    Profil
-                                </x-dropdown-link>
+                        <svg class="ms-1 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
 
-                                <!-- Link ke Tampilan User -->
-                                <x-dropdown-link
-                                    :href="route('dashboard.user')"
-                                    class="block px-4 py-2 !text-white font-semibold hover:bg-[#1a1f3b]">
-                                    Tampilan User
-                                </x-dropdown-link>
+                    <div x-show="open"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95"
+                            class="absolute right-0 z-50 mt-2 w-48 rounded-2xl shadow-xl bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none"
+                            style="display: none;">
+                        
+                         <div class="block px-4 py-2 text-xs text-gray-400 font-serif border-b border-gray-50">
+                            {{ __('Manage Account') }}
+                        </div>
 
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <x-dropdown-link 
-                                        :href="route('logout')" 
-                                        onclick="event.preventDefault(); this.closest('form').submit();" 
-                                        class="block px-4 py-2 !text-white font-semibold hover:bg-[#1a1f3b]">
-                                        Keluar
-                                    </x-dropdown-link>
-                                </form>
-                            </div>
-                        </x-slot>
-                    </x-dropdown>
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-[#c29595] transition">
+                            {{ __('Profile') }}
+                        </a>
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <a href="{{ route('logout') }}"
+                               onclick="event.preventDefault(); this.closest('form').submit();"
+                               class="block px-4 py-2 text-sm text-red-400 hover:bg-red-50 hover:text-red-600 transition">
+                                {{ __('Log Out') }}
+                            </a>
+                        </form>
+                    </div>
                 </div>
-            @endauth
+                @else
+                    <a href="{{ route('login') }}" class="text-gray-500 hover:text-[#d4a5a5] font-medium mr-4">Log in</a>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="px-5 py-2 rounded-full bg-gradient-to-r from-[#d4a5a5] to-[#c29595] text-white font-medium shadow-md hover:shadow-lg transition">Register</a>
+                    @endif
+                @endauth
+            </div>
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = !open" class="p-2 text-gray-300 hover:bg-[#2a3155] rounded-md">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{ 'hidden': open, 'inline-flex': !open }" class="inline-flex"
-                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{ 'hidden': !open, 'inline-flex': open }" class="hidden"
-                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
+                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Menu Responsif -->
-    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden bg-[#212844]">
+    <!-- Responsive Menu -->
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white border-t border-gray-100">
+        <div class="pt-2 pb-3 space-y-1">
+             <!-- Mobile Links here (simplified for brevity, mirroring desktop logic) -->
+              @auth
+                @php
+                    $navClassesMobile = "block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 hover:text-[#d4a5a5] hover:bg-pink-50 hover:border-[#d4a5a5] transition duration-150 ease-in-out";
+                    $activeClassesMobile = "block w-full ps-3 pe-4 py-2 border-l-4 border-[#d4a5a5] text-start text-base font-medium text-[#c29595] bg-pink-50 focus:outline-none transition duration-150 ease-in-out";
+                @endphp
+                 <!-- ... Similar Logic for Mobile ... -->
+                 @if(Auth::user()->role === 'superadmin' || Auth::user()->role === 'admin')
+                    <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? $activeClassesMobile : $navClassesMobile }}"> Products </a>
+                 @endif
+
+              @endauth
+        </div>
+        
+        <!-- Mobile Settings -->
         @auth
-            <div class="pt-4 pb-1 border-t border-[#1a1f33]">
-                <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link 
-                        :href="route('articles.index')" 
-                        class="text-white font-semibold hover:bg-[#1a1f3b]">
-                        Articles
-                    </x-responsive-nav-link>
-
-                    <x-responsive-nav-link 
-                        :href="route('galleries.index')" 
-                        class="text-white font-semibold hover:bg-[#1a1f3b]">
-                        Galleries
-                    </x-responsive-nav-link>
-
-                    <x-responsive-nav-link
-                        :href="route('categories.index')"
-                        class="text-white font-semibold hover:bg-[#1a1f3b]">
-                        Categories
-                    </x-responsive-nav-link>
-
-                    @if(Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin')
-                        <x-responsive-nav-link 
-                            :href="route('albums.index')" 
-                            class="text-white font-semibold hover:bg-[#1a1f3b]">
-                            Album Produk
-                        </x-responsive-nav-link>
-                    @endif
-                </div>
+        <div class="pt-4 pb-1 border-t border-gray-200">
+            <div class="px-4">
+                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
+                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
+
+            <div class="mt-3 space-y-1">
+                <a href="{{ route('profile.edit') }}" class="block w-full ps-3 pe-4 py-2 text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 transition">
+                    {{ __('Profile') }}
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" class="block w-full ps-3 pe-4 py-2 text-start text-base font-medium text-red-600 hover:text-red-800 hover:bg-red-50 transition">
+                        {{ __('Log Out') }}
+                    </a>
+                </form>
+            </div>
+        </div>
         @endauth
     </div>
 </nav>

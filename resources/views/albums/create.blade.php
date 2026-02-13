@@ -1,79 +1,43 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-2xl text-white leading-tight">
-            Tambah Album
+        <h2 class="font-semibold text-2xl text-gray-800 leading-tight luxury-gold-text" style="font-family: 'Playfair Display', serif;">
+            {{ __('Create New Album') }}
         </h2>
     </x-slot>
 
-    <div class="py-12" style="background-color: #F0E8D5; min-height: 100vh;">
-        <div class="max-w-md mx-auto p-8 rounded-2xl shadow-2xl bg-[#212844] text-white">
+    <div class="py-12">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl rounded-3xl border border-gray-50 p-8">
+                
+                <form action="{{ route('albums.store') }}" method="POST">
+                    @csrf
 
-            <h2 class="text-2xl font-bold text-center mb-6">
-                Buat Album Produk
-            </h2>
+                    <div class="space-y-6">
+                        <!-- Name -->
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Album Name</label>
+                            <input type="text" name="name" id="name" value="{{ old('name') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50" required placeholder="e.g. Product Launch 2026">
+                            @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
 
-            @if ($errors->any())
-                <div class="mb-3 p-2 bg-red-600 text-white rounded">
-                    <ul class="list-disc ml-4">
-                        @foreach ($errors->all() as $err)
-                            <li>{{ $err }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+                         <!-- Description -->
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea name="description" id="description" rows="4" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50" placeholder="Optional description">{{ old('description') }}</textarea>
+                            @error('description') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
 
-            <form method="POST"
-                  action="{{ route('albums.store') }}"
-                  enctype="multipart/form-data"
-                  class="space-y-6">
-                @csrf
-
-                <!-- NAMA ALBUM -->
-                <div>
-                    <label class="block font-semibold mb-1">Nama Album</label>
-                    <input type="text"
-                           name="name"
-                           value="{{ old('name') }}"
-                           required
-                           placeholder="Contoh: Skincare Series"
-                           class="w-full px-4 py-2 rounded-lg bg-[#212844] border border-white text-white placeholder-gray-400">
-                </div>
-
-                <!-- DESKRIPSI -->
-                <div>
-                    <label class="block font-semibold mb-1">Deskripsi</label>
-                    <textarea name="description"
-                              rows="4"
-                              placeholder="Deskripsi singkat album"
-                              class="w-full px-4 py-2 rounded-lg bg-[#212844] border border-white text-white placeholder-gray-400">{{ old('description') }}</textarea>
-                </div>
-
-                <!-- COVER IMAGE -->
-                <div>
-                    <label class="block font-semibold mb-1">Cover Album</label>
-                    <input type="file"
-                           name="cover_image"
-                           accept="image/*"
-                           class="w-full text-sm text-gray-300
-                                  file:mr-4 file:py-2 file:px-4
-                                  file:rounded-lg file:border-0
-                                  file:bg-green-600 file:text-white
-                                  hover:file:bg-green-700">
-                </div>
-
-                <!-- BUTTON -->
-                <div class="flex gap-3 pt-2">
-                    <button type="submit"
-                            class="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
-                        Simpan Album
-                    </button>
-
-                    <a href="{{ route('albums.index') }}"
-                       class="flex-1 py-2 bg-gray-500 hover:bg-gray-600 text-white text-center rounded-lg">
-                        Cancel
-                    </a>
-                </div>
-            </form>
+                    <div class="mt-10 flex items-center justify-end space-x-4">
+                        <a href="{{ route('albums.index') }}" class="px-6 py-3 rounded-xl text-gray-600 bg-gray-100 hover:bg-gray-200 font-medium transition">
+                            Cancel
+                        </a>
+                        <button type="submit" class="px-8 py-3 rounded-xl text-white font-medium shadow-lg hover:shadow-xl transform transition hover:-translate-y-0.5" style="background: linear-gradient(135deg, #d4a5a5 0%, #c29595 100%);">
+                            Create Album
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </x-app-layout>

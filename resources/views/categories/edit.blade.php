@@ -1,92 +1,70 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-2xl text-white leading-tight">
-            Edit Category
+        <h2 class="font-semibold text-2xl text-gray-800 leading-tight luxury-gold-text" style="font-family: 'Playfair Display', serif;">
+            {{ __('Edit Category') }}
         </h2>
     </x-slot>
 
-    <div class="py-12" style="background-color: #F0E8D5; min-height: 100vh;">
-        <div class="max-w-md mx-auto p-8 rounded-2xl shadow-2xl bg-[#212844] text-white">
+    <div class="py-12">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl rounded-3xl border border-gray-50 p-8">
+                
+                <form action="{{ route('categories.update', $category->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
 
-            <h2 class="text-2xl font-bold text-center mb-6">
-                Edit Category
-            </h2>
+                    <div class="space-y-6">
+                        <!-- Name -->
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1" style="font-family: 'Playfair Display', serif;">Category Name</label>
+                            <input type="text" name="name" id="name" value="{{ old('name', $category->name) }}" 
+                                class="mt-1 block w-full rounded-2xl border-gray-200 shadow-sm focus:border-red-200 focus:ring focus:ring-red-100 focus:ring-opacity-50 transition bg-gray-50/30 py-3" 
+                                required onkeyup="generateSlug()">
+                            @error('name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
 
-            @if ($errors->any())
-                <div class="mb-3 p-2 bg-red-600 text-white rounded">
-                    <ul class="list-disc ml-4">
-                        @foreach ($errors->all() as $err)
-                            <li>{{ $err }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+                         <!-- Slug -->
+                        <div>
+                            <label for="slug" class="block text-sm font-medium text-gray-700 mb-1" style="font-family: 'Playfair Display', serif;">Slug</label>
+                            <input type="text" name="slug" id="slug" value="{{ old('slug', $category->slug) }}" 
+                                class="mt-1 block w-full rounded-2xl border-gray-200 shadow-sm focus:border-gray-200 focus:ring focus:ring-gray-100 focus:ring-opacity-50 transition bg-gray-100 py-3 text-gray-500" 
+                                readonly>
+                            @error('slug') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
 
-            <form action="{{ route('categories.update', $category) }}" method="POST" class="space-y-6">
-                @csrf
-                @method('PUT')
+                         <!-- Description -->
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-1" style="font-family: 'Playfair Display', serif;">Description</label>
+                            <textarea name="description" id="description" rows="4" 
+                                class="mt-1 block w-full rounded-2xl border-gray-200 shadow-sm focus:border-red-200 focus:ring focus:ring-red-100 focus:ring-opacity-50 transition bg-gray-50/30 py-3">{{ old('description', $category->description) }}</textarea>
+                            @error('description') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
 
-                <!-- Nama Category -->
-                <div>
-                    <label class="block font-semibold mb-1">Nama Category</label>
-                    <input type="text"
-                           id="name"
-                           name="name"
-                           value="{{ old('name', $category->name) }}"
-                           required
-                           placeholder="Contoh: Skincare"
-                           class="w-full px-4 py-2 rounded-lg bg-[#212844] border border-white text-white placeholder-gray-400">
-                </div>
-
-                <!-- Slug -->
-                <div>
-                    <label class="block font-semibold mb-1">Slug</label>
-                    <input type="text"
-                           id="slug"
-                           name="slug"
-                           value="{{ old('slug', $category->slug) }}"
-                           required
-                           placeholder="Contoh: skincare"
-                           class="w-full px-4 py-2 rounded-lg bg-[#212844] border border-white text-white placeholder-gray-400">
-                </div>
-
-                <!-- Deskripsi -->
-                <div>
-                    <label class="block font-semibold mb-1">Deskripsi</label>
-                    <textarea id="description"
-                              name="description"
-                              rows="4"
-                              placeholder="Deskripsi singkat category"
-                              class="w-full px-4 py-2 rounded-lg bg-[#212844] border border-white text-white placeholder-gray-400">{{ old('description', $category->description) }}</textarea>
-                </div>
-
-                <!-- Button -->
-                <div class="flex gap-3 pt-2">
-                    <button type="submit"
-                            class="flex-1 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg">
-                        Update Category
-                    </button>
-
-                    <a href="{{ route('categories.index') }}"
-                       class="flex-1 py-2 bg-gray-500 hover:bg-gray-600 text-white text-center rounded-lg">
-                        Cancel
-                    </a>
-                </div>
-            </form>
+                    <div class="mt-10 flex items-center justify-end space-x-4">
+                        <a href="{{ route('categories.index') }}" class="px-6 py-3 rounded-full text-gray-500 bg-white border border-gray-200 hover:bg-gray-50 font-medium transition shadow-sm">
+                            Cancel
+                        </a>
+                        <button type="submit" class="px-8 py-3 rounded-full text-white font-medium shadow-lg hover:shadow-xl transform transition hover:-translate-y-0.5" style="background: linear-gradient(135deg, #d4a5a5 0%, #c29595 100%);">
+                            Update Category
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <!-- Script untuk slug otomatis -->
+    @push('scripts')
     <script>
-        const nameInput = document.getElementById('name');
-        const slugInput = document.getElementById('slug');
+        function generateSlug() {
+            let name = document.getElementById('name').value;
+            let slug = name.toLowerCase()
+                .replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+                .replace(/\s+/g, '-') // collapse whitespace and replace by -
+                .replace(/-+/g, '-'); // collapse dashes
 
-        nameInput.addEventListener('input', function() {
-            let slug = this.value.toLowerCase()
-                                 .trim()
-                                 .replace(/[\s\W-]+/g, '-') 
-                                 .replace(/^-+|-+$/g, '');
-            slugInput.value = slug;
-        });
+            document.getElementById('slug').value = slug;
+        }
     </script>
+    @endpush
 </x-app-layout>

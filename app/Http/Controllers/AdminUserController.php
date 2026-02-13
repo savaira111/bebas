@@ -28,7 +28,7 @@ class AdminUserController extends Controller
             $query->where('role', $request->role);
         }
 
-        $users = $query->orderBy('created_at', 'desc')->get();
+        $users = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return view('admin.users.index', compact('users'));
     }
@@ -128,7 +128,7 @@ class AdminUserController extends Controller
             $query->where('role', 'user');
         }
 
-        $users = $query->orderBy('deleted_at', 'desc')->get();
+        $users = $query->orderBy('deleted_at', 'desc')->paginate(10);
 
         return view('admin.users.trashed', compact('users'));
     }

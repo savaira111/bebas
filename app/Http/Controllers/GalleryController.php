@@ -14,7 +14,7 @@ class GalleryController extends Controller
     {
         $galleries = Gallery::whereNull('deleted_at')
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view('galleries.index', compact('galleries'));
     }
@@ -23,7 +23,7 @@ class GalleryController extends Controller
     {
         $galleries = Gallery::onlyTrashed()
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view('galleries.trashed', compact('galleries'));
     }

@@ -1,71 +1,82 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-bold text-2xl text-white text-center leading-tight">
+        <h2 class="font-semibold text-2xl text-gray-800 leading-tight luxury-gold-text" style="font-family: 'Playfair Display', serif;">
             {{ __('Profile') }}
         </h2>
     </x-slot>
 
-    <div class="py-12 bg-[#F0E8D5] min-h-screen">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <!-- Avatar Card -->
-            <div class="p-8 bg-[#212844] text-white shadow-xl rounded-2xl">
-                <div class="flex flex-col items-center space-y-6">
-                    <img src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : asset('default-avatar.png') }}"
-                         alt="Avatar"
-                         class="w-32 h-32 rounded-full border-4 border-white object-cover shadow-md">
+            <div class="p-4 sm:p-8 bg-white shadow-xl rounded-3xl border border-gray-50 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#d4a5a5] to-[#c29595]"></div>
+                <div class="max-w-xl">
+                    <section>
+                        <header>
+                            <h2 class="text-lg font-medium text-gray-900" style="font-family: 'Playfair Display', serif;">
+                                {{ __('Avatar') }}
+                            </h2>
+                            <p class="mt-1 text-sm text-gray-600">
+                                {{ __("Update your profile picture.") }}
+                            </p>
+                        </header>
+                        
+                        <div class="mt-6 flex items-center gap-6">
+                            <img src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : asset('default-avatar.png') }}"
+                                 alt="Avatar"
+                                 class="w-24 h-24 rounded-full border-4 border-gray-100 object-cover shadow-sm">
 
-                    <form method="POST"
-                          action="{{ route('profile.avatar.update') }}"
-                          enctype="multipart/form-data"
-                          class="flex flex-col items-center w-full max-w-sm space-y-3">
-                        @csrf
-                        @method('PATCH')
+                            <form method="POST" action="{{ route('profile.avatar.update') }}" enctype="multipart/form-data" class="space-y-4">
+                                @csrf
+                                @method('PATCH')
+                                
+                                <div>
+                                    <label class="block">
+                                        <span class="sr-only">Choose profile photo</span>
+                                        <input type="file" name="avatar" accept="image/*" class="block w-full text-sm text-gray-500
+                                          file:mr-4 file:py-2 file:px-4
+                                          file:rounded-full file:border-0
+                                          file:text-sm file:font-semibold
+                                          file:bg-red-50 file:text-red-700
+                                          hover:file:bg-red-100
+                                          transition cursor-pointer
+                                        "/>
+                                    </label>
+                                </div>
 
-                        <input type="file"
-                               name="avatar"
-                               accept="image/*"
-                               class="w-full text-sm rounded-lg bg-[#2b3260] px-3 py-2 focus:outline-none"
-                               required>
-
-                        <button type="submit"
-                                class="w-full px-4 py-2 bg-green-600 rounded-lg font-semibold hover:bg-green-700 transition">
-                            Update Avatar
-                        </button>
-                    </form>
+                                <button type="submit" class="px-6 py-2 rounded-full text-white text-sm font-medium shadow-md hover:shadow-lg transform transition hover:-translate-y-0.5" style="background: linear-gradient(135deg, #d4a5a5 0%, #c29595 100%);">
+                                    {{ __('Save Avatar') }}
+                                </button>
+                            </form>
+                        </div>
+                    </section>
                 </div>
             </div>
 
             <!-- Profile Information Card -->
-            <div class="p-8 bg-[#212844] text-white shadow-xl rounded-2xl">
-                <div class="max-w-2xl mx-auto space-y-6">
-                    <h3 class="text-xl font-semibold text-center">
-                        Perbarui Informasi Profil
-                    </h3>
+            <div class="p-4 sm:p-8 bg-white shadow-xl rounded-3xl border border-gray-50 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#d4a5a5] to-[#c29595]"></div>
+                <div class="max-w-xl">
                     @include('profile.partials.update-profile-information-form')
                 </div>
             </div>
 
             <!-- Update Password Card -->
-            <div class="p-8 bg-[#212844] text-white shadow-xl rounded-2xl">
-                <div class="max-w-2xl mx-auto space-y-6">
-                    <h3 class="text-xl font-semibold text-center">
-                        Perbarui Kata Sandi
-                    </h3>
+            <div class="p-4 sm:p-8 bg-white shadow-xl rounded-3xl border border-gray-50 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#d4a5a5] to-[#c29595]"></div>
+                <div class="max-w-xl">
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
 
             <!-- Delete Account Card -->
-            <div class="p-8 bg-[#212844] text-white shadow-xl rounded-2xl">
-                <div class="max-w-2xl mx-auto space-y-6 text-center">
-                    <h3 class="text-xl font-semibold">
-                        Hapus Akun
-                    </h3>
+            <div class="p-4 sm:p-8 bg-white shadow-xl rounded-3xl border border-gray-50 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#d4a5a5] to-[#c29595]"></div>
+                <div class="max-w-xl">
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>

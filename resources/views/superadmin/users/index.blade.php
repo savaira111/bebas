@@ -1,168 +1,166 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-white leading-tight">
-            Manajemen Pengguna
+        <h2 class="font-semibold text-2xl text-gray-800 leading-tight luxury-gold-text" style="font-family: 'Playfair Display', serif;">
+            {{ __('User Management (SuperAdmin)') }}
         </h2>
     </x-slot>
 
-    <div class="py-12 bg-gradient-to-br from-[#F0E8D5] to-[#E0D8C0] min-h-screen">
+    <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <!-- Tombol Tambah User -->
-            <div class="flex justify-end mb-4">
-                <a href="{{ route('superadmin.users.create') }}" 
-                   class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow">
-                    + Tambah User
-                </a>
+                <!-- Filter & Search -->
+                <form method="GET" class="flex flex-wrap gap-3 flex-grow">
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Search username or role..."
+                        class="px-4 py-2 rounded-full border border-gray-200 focus:border-red-200 focus:ring focus:ring-red-100 transition shadow-sm w-full md:w-64 bg-white text-gray-700">
+
+                    <select name="role"
+                            class="px-4 py-2 rounded-full border border-gray-200 focus:border-red-200 focus:ring focus:ring-red-100 transition shadow-sm bg-white text-gray-700 cursor-pointer">
+                        <option value="all" {{ request('role')=='all' ? 'selected' : '' }}>All Roles</option>
+                        <option value="user" {{ request('role')=='user' ? 'selected' : '' }}>User</option>
+                        <option value="admin" {{ request('role')=='admin' ? 'selected' : '' }}>Admin</option>
+                    </select>
+
+                    <button type="submit"
+                            class="px-6 py-2 rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition shadow-sm font-medium">
+                        Filter
+                    </button>
+                    <!-- Clear button removed as requested -->
+                </form>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                     <a href="{{ route('superadmin.users.trash.index', ['type' => 'users']) }}" 
+                       class="px-6 py-2.5 rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition shadow-sm font-medium flex items-center gap-2">
+                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Trash
+                    </a>
+                    <a href="{{ route('superadmin.users.create') }}" 
+                       class="px-6 py-2.5 rounded-full text-white font-medium shadow-lg transform transition hover:-translate-y-0.5"
+                       style="background: linear-gradient(135deg, #d4a5a5 0%, #c29595 100%); box-shadow: 0 4px 15px rgba(212, 165, 165, 0.4);">
+                        + Add User
+                    </a>
+                </div>
             </div>
-            <!-- SweetAlert Sukses -->
-            @if(session('success'))
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: "{{ session('success') }}",
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                    });
-                </script>
-            @endif
-
-            <!-- Pencarian + Filter -->
-            <form method="GET" class="flex flex-col sm:flex-row gap-3 mb-2">
-                <input type="text" name="search" value="{{ request('search') }}"
-                       placeholder="Cari username atau role..."
-                       class="px-3 py-2 rounded border border-gray-500 bg-[#2a3155] text-white focus:outline-none flex-1">
-
-                <select name="role"
-                        class="px-3 py-2 rounded border border-gray-500 bg-[#2a3155] text-white focus:outline-none">
-                    <option value="all" {{ request('role')=='all' ? 'selected' : '' }}>Semua Role</option>
-                    <option value="user" {{ request('role')=='user' ? 'selected' : '' }}>User</option>
-                    <option value="admin" {{ request('role')=='admin' ? 'selected' : '' }}>Admin</option>
-                    <option value="superadmin" {{ request('role')=='superadmin' ? 'selected' : '' }}>Superadmin</option>
-                </select>
-
-                <button type="submit"
-                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition">
-                    Terapkan
-                </button>
-            </form>
 
             <!-- Tabel User -->
-            <div class="bg-[#212844] shadow-lg sm:rounded-lg p-4 overflow-x-auto mt-4">
-                <table class="min-w-full divide-y divide-gray-600 text-sm">
-                    <thead class="bg-[#2a3155]">
-                        <tr>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">No</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Profil</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Username</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Nama</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Email</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Role</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Dibuat Pada</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Aksi</th>
-                        </tr>
-                    </thead>
+            <div class="bg-white overflow-hidden shadow-xl rounded-3xl border border-gray-50">
+                <div class="overflow-x-auto">
+                    <table class="w-full whitespace-nowrap">
+                        <thead>
+                            <tr class="text-left font-bold tracking-wide luxury-table-head bg-gray-50 border-b border-gray-100">
+                                <th class="px-8 py-5 uppercase text-xs text-gray-500">No</th>
+                                <th class="px-8 py-5 uppercase text-xs text-gray-500">Profile</th>
+                                <th class="px-8 py-5 uppercase text-xs text-gray-500">Username</th>
+                                <th class="px-8 py-5 uppercase text-xs text-gray-500">Name</th>
+                                <th class="px-8 py-5 uppercase text-xs text-gray-500">Email</th>
+                                <th class="px-8 py-5 uppercase text-xs text-gray-500">Role</th>
+                                <th class="px-8 py-5 uppercase text-xs text-gray-500">Created At</th>
+                                <th class="px-8 py-5 text-right uppercase text-xs text-gray-500">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse($users as $user)
+                                @if($user->role === 'superadmin')
+                                    @continue
+                                @endif
+                                <tr class="hover:bg-pink-50/30 transition duration-150">
+                                    <td class="px-8 py-4 text-gray-500 font-medium">{{ $loop->iteration }}</td>
+                                    
+                                    <!-- FOTO PROFIL / INISIAL -->
+                                    <td class="px-8 py-4">
+                                        @if(!empty($user->profile_photo_path))
+                                            <img src="{{ Storage::url($user->profile_photo_path) }}"
+                                                 alt="Profil" class="h-10 w-10 rounded-full object-cover border border-gray-200 shadow-sm">
+                                        @else
+                                            <div class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-100 text-gray-400 font-bold border border-gray-200">
+                                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                    </td>
 
-                    <tbody class="divide-y divide-gray-600">
-                        @php $hasData = false; @endphp
-                        @forelse($users as $user)
-                            @if($user->role === 'superadmin')
-                                @continue
-                            @endif
-                            @php $hasData = true; @endphp
-                            <tr class="hover:bg-[#1a1f33] transition">
-                                <td class="px-3 py-2 text-white">
-                                    {{ $loop->iteration }}
-                                </td>
+                                    <td class="px-8 py-4 text-gray-700 font-medium">{{ $user->username ?? '-' }}</td>
+                                    <td class="px-8 py-4">
+                                         <div class="text-sm font-semibold text-gray-800" style="font-family: 'Playfair Display', serif;">{{ $user->name }}</div>
+                                    </td>
+                                    <td class="px-8 py-4 text-sm text-gray-500">{{ $user->email }}</td>
 
-                                <!-- FOTO PROFIL / INISIAL -->
-                                <td class="px-3 py-2">
-                                    @if(!empty($user->profile_photo_path))
-                                        <img src="{{ Storage::url($user->profile_photo_path) }}"
-                                             alt="Profil" class="h-10 w-10 rounded-full object-cover border border-white">
-                                    @else
-                                        <div class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-600 text-white font-bold border border-white">
-                                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    <td class="px-8 py-4">
+                                        <span class="px-3 py-1 rounded-full text-xs font-semibold tracking-wide
+                                            {{ $user->role == 'admin' ? 'bg-orange-100 text-orange-600' : ($user->role == 'superadmin' ? 'bg-purple-100 text-purple-600' : 'bg-green-100 text-green-600') }}">
+                                            {{ ucfirst($user->role) }}
+                                        </span>
+                                    </td>
+
+                                    <td class="px-8 py-4 text-sm text-gray-500">
+                                        {{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}
+                                    </td>
+
+                                    <td class="px-8 py-4 text-right text-sm font-medium">
+                                        <div class="flex items-center justify-end space-x-3">
+                                            <a href="{{ route('superadmin.users.edit', $user->id) }}" class="text-gray-400 hover:text-yellow-600 transition" title="Edit">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            </a>
+
+                                            @if($user->role !== 'superadmin' && $user->id !== auth()->id())
+                                                <button onclick="confirmDelete({{ $user->id }})" class="text-gray-400 hover:text-red-600 transition" title="Delete">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                </button>
+                                                <form id="delete-form-{{ $user->id }}" action="{{ route('superadmin.users.destroy', $user->id) }}" method="POST" class="hidden">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
+                                            @endif
                                         </div>
-                                    @endif
-                                </td>
-
-                                <td class="px-3 py-2 text-white">{{ $user->username ?? '-' }}</td>
-                                <td class="px-3 py-2 text-white">{{ $user->name }}</td>
-                                <td class="px-3 py-2 text-white">{{ $user->email }}</td>
-
-                                <td class="px-3 py-2">
-                                    <span class="px-2 py-1 rounded-full text-xs font-semibold
-                                        {{ $user->role == 'admin' ? 'bg-yellow-500 text-black' : 'bg-green-500 text-white' }}">
-                                        {{ ucfirst($user->role) }}
-                                    </span>
-                                </td>
-
-                                <!-- Dibuat Pada -->
-                                <td class="px-3 py-2 text-gray-200">
-                                    {{ $user->created_at
-                                        ? $user->created_at->timezone(config('app.timezone'))->format('d M Y, H:i') . ' WIB'
-                                        : '-' }}
-                                </td>
-
-                                <!-- Aksi -->
-                                <td class="px-3 py-2 flex gap-2">
-                                    <a href="{{ route('superadmin.users.edit', $user->id) }}"
-                                       class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-                                        Edit
-                                    </a>
-
-                                    <button onclick="deleteUser({{ $user->id }})"
-                                            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
-                                        Hapus
-                                    </button>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-4 text-gray-300">
-                                    Belum ada data.
-                                </td>
-                            </tr>
-                        @endforelse
-                        @if(!$hasData)
-                            <tr>
-                                <td colspan="8" class="text-center py-4 text-gray-300">
-                                    Belum ada data.
-                                </td>
-                            </tr>
-                        @endif
-                    </tbody>
-                </table>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="px-8 py-10 text-center text-gray-400 italic">
+                                        No users found.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                 <div class="px-8 py-5 border-t border-gray-50 bg-gray-50/50">
+                    {{ $users->withQueryString()->links() }}
+                </div>
             </div>
-
         </div>
     </div>
 
-    <!-- SweetAlert Hapus -->
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function deleteUser(id) {
+        function confirmDelete(id) {
             Swal.fire({
-                title: 'Pindahkan ke Sampah?',
-                text: "User ini akan dipindahkan ke tempat sampah.",
+                title: 'Move to Trash?',
+                text: "The user will be moved to trash.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Ya'
+                confirmButtonColor: '#d4a5a5',
+                cancelButtonColor: '#f3f4f6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'text-white px-4 py-2 rounded-lg',
+                    cancelButton: 'text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100'
+                },
+                background: '#fff',
+                color: '#555'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    let form = document.createElement('form');
-                    form.action = `/superadmin/users/${id}`;
-                    form.method = 'POST';
-                    form.innerHTML = `@csrf @method('DELETE')`;
-                    document.body.appendChild(form);
-                    form.submit();
+                    document.getElementById('delete-form-' + id).submit();
                 }
-            });
+            })
         }
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .swal2-title { font-family: 'Playfair Display', serif !important; }
+        .swal2-popup { border-radius: 20px !important; }
+    </style>
+    @endpush
 </x-app-layout>

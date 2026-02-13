@@ -1,109 +1,111 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-white leading-tight">
-            Manajemen Album
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-2xl text-gray-800 leading-tight luxury-gold-text" style="font-family: 'Playfair Display', serif;">
+                {{ __('Album Management') }}
+            </h2>
+            <a href="{{ route('albums.create') }}" class="px-6 py-2.5 rounded-full text-white font-medium tracking-wide shadow-lg transform transition hover:-translate-y-0.5" style="background: linear-gradient(135deg, #d4a5a5 0%, #c29595 100%); box-shadow: 0 4px 15px rgba(212, 165, 165, 0.4);">
+                + Create Album
+            </a>
+        </div>
     </x-slot>
 
-    <div class="py-12 bg-gradient-to-br from-[#F0E8D5] to-[#E0D8C0] min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-
-            @if(session('success'))
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: "{{ session('success') }}",
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                    });
-                </script>
-            @endif
-
-            <div class="flex justify-end mb-4">
-                <a href="{{ route('albums.create') }}"
-                   class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow">
-                    + Tambah Album
-                </a>
+    <div class="py-6">
+        <div class="mb-8 relative max-w-4xl mx-auto md:mx-0 flex flex-col md:flex-row gap-4">
+            <div class="relative flex-grow">
+                <form action="{{ route('albums.index') }}" method="GET" class="w-full">
+                    <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Search albums..." class="w-full pl-12 pr-4 py-3 rounded-full border-gray-200 focus:border-red-200 focus:ring focus:ring-red-100 transition shadow-sm bg-white" style="color: #666;">
+                    <button type="submit" class="absolute left-4 top-3.5 text-gray-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
+                </form>
             </div>
 
-            <div class="bg-[#212844] shadow-lg sm:rounded-lg p-4 overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-600 text-sm">
-                    <thead class="bg-[#2a3155]">
-                        <tr>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">No</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Cover</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Nama Album</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Deskripsi</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Jumlah Foto</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Dibuat</th>
-                            <th class="px-3 py-2 text-left text-gray-200 uppercase">Aksi</th>
+            <div class="flex gap-2">
+                <a href="{{ route('albums.trashed') }}" class="px-6 py-3 rounded-full bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition shadow-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Trash
+                </a>
+            </div>
+        </div>
+
+        @if(session('success'))
+            <div class="mb-4 px-6 py-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-lg shadow-sm">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <div class="bg-white overflow-hidden shadow-xl rounded-3xl border border-gray-50">
+            <div class="overflow-x-auto">
+                <table class="w-full whitespace-nowrap">
+                    <thead>
+                        <tr class="text-left font-bold tracking-wide luxury-table-head">
+                            <th class="px-8 py-5 uppercase text-xs">No</th>
+                            <th class="px-8 py-5 uppercase text-xs">Name</th>
+                            <th class="px-8 py-5 uppercase text-xs">Description</th>
+                            <th class="px-8 py-5 uppercase text-xs">Created At</th>
+                            <th class="px-8 py-5 text-right uppercase text-xs">Actions</th>
                         </tr>
                     </thead>
-
-                    <tbody class="divide-y divide-gray-600">
+                    <tbody class="divide-y divide-gray-100">
                         @forelse($albums as $album)
-                            <tr class="hover:bg-[#1a1f33] transition">
-                                <td class="px-3 py-2 text-white">
-                                    {{ $loop->iteration }}
+                            <tr class="hover:bg-pink-50/30 transition duration-150">
+                                <td class="px-8 py-4 text-gray-500 font-medium">{{ $loop->iteration }}</td>
+                                <td class="px-8 py-4">
+                                    <div class="text-sm font-semibold text-gray-800" style="font-family: 'Playfair Display', serif;">
+                                        {{ $album->name }}
+                                    </div>
                                 </td>
-
-                                <td class="px-3 py-2">
-                                    @if($album->cover_image)
-                                        <img src="{{ asset('storage/'.$album->cover_image) }}"
-                                             class="h-12 w-12 rounded object-cover border border-white">
-                                    @else
-                                        <div class="h-12 w-12 flex items-center justify-center bg-gray-600 text-white rounded border border-white">
-                                            —
-                                        </div>
-                                    @endif
+                                <td class="px-8 py-4 text-sm text-gray-500 max-w-xs truncate">
+                                    {{ $album->description ?? '-' }}
                                 </td>
-
-                                <td class="px-3 py-2 text-white font-semibold">
-                                    {{ $album->name }}
-                                </td>
-
-                                <td class="px-3 py-2 text-gray-300">
-                                    {{ \Illuminate\Support\Str::limit($album->description, 50) ?? '-' }}
-                                </td>
-
-                                <td class="px-3 py-2 text-white">
-                                    {{ $album->photos->count() }}
-                                </td>
-
-                                <td class="px-3 py-2 text-gray-200">
+                                <td class="px-8 py-4 text-sm text-gray-500">
                                     {{ $album->created_at ? $album->created_at->format('d M Y') : '-' }}
                                 </td>
+                                <td class="px-8 py-4 text-right text-sm font-medium">
+                                    <div class="flex items-center justify-end space-x-3">
+                                        <a href="{{ route('albums.show', $album->id) }}" class="text-gray-400 hover:text-blue-400 transition" title="View Photos">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                        </a>
 
-                                <td class="px-3 py-2 flex flex-wrap gap-2">
-                                    <a href="{{ route('albums.show', $album) }}"
-                                       class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700">
-                                        Buka Album
-                                    </a>
+                                        <a href="{{ route('albums.edit', $album->id) }}" class="text-gray-400 hover:text-red-400 transition" title="Edit">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                        </a>
 
-                                    {{-- ✅ TAMBAH GALLERY KE HALAMAN CREATE --}}
-                                    <a href="{{ route('galleries.create', ['album_id' => $album->id]) }}"
-                                       class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                                        + Tambah Gallery
-                                    </a>
+                                        <!-- DELETE BUTTON - PASTI BISA DI KLIK -->
+                                        <a href="#" 
+                                           onclick="event.preventDefault(); if(confirm('Move album \"{{ $album->name }}\" to trash?')) { document.getElementById('delete-form-{{ $album->id }}').submit(); }"
+                                           class="text-gray-400 hover:text-red-600 transition"
+                                           title="Delete">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </a>
 
-                                    <a href="{{ route('albums.edit', $album) }}"
-                                       class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-                                        Edit
-                                    </a>
-
-                                    <button onclick="deleteAlbum({{ $album->id }})"
-                                            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
-                                        Hapus
-                                    </button>
+                                        <!-- DELETE FORM -->
+                                        <form id="delete-form-{{ $album->id }}" 
+                                              action="{{ route('albums.destroy', $album->id) }}" 
+                                              method="POST" 
+                                              style="display: none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-gray-300">
-                                    Belum ada album.
+                                <td colspan="5" class="px-8 py-10 text-center text-gray-400 italic">
+                                    No albums found.
                                 </td>
                             </tr>
                         @endforelse
@@ -111,29 +113,9 @@
                 </table>
             </div>
 
+            <div class="px-8 py-5 border-t border-gray-50 bg-gray-50/50">
+                {{ $albums->appends(['keyword' => request('keyword')])->links() }}
+            </div>
         </div>
     </div>
-
-    <script>
-        function deleteAlbum(id) {
-            Swal.fire({
-                title: 'Hapus Album?',
-                text: "Album dan semua fotonya akan dihapus.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    let form = document.createElement('form');
-                    form.action = `/albums/${id}`;
-                    form.method = 'POST';
-                    form.innerHTML = `@csrf @method('DELETE')`;
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        }
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </x-app-layout>
