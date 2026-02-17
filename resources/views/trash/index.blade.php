@@ -1,8 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-2xl text-gray-800 leading-tight luxury-gold-text" style="font-family: 'Playfair Display', serif;">
-            {{ __('Trash Management (SuperAdmin)') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-2xl text-gray-800 leading-tight luxury-gold-text" style="font-family: 'Playfair Display', serif;">
+                {{ __('Trash Management (SuperAdmin)') }}
+            </h2>
+            <a href="{{ route('dashboard.superadmin') }}" class="px-6 py-2.5 rounded-full text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 font-medium transition shadow-sm">
+                &larr; Back to Dashboard
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-6">
