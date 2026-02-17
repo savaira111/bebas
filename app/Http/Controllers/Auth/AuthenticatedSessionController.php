@@ -16,8 +16,11 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        if ($request->has('return_url')) {
+            session(['url.intended' => $request->get('return_url')]);
+        }
         return view('auth.login');
     }
 
@@ -61,7 +64,12 @@ class AuthenticatedSessionController extends Controller
             $user->save();
         }
 
-        // 5️⃣ REDIRECT BY ROLE
+        // 5️⃣ REDIRECT BY ROLE OR INTENDED URL
+        if ($url = session('url.intended')) {
+            session()->forget('url.intended');
+            return redirect($url);
+        }
+
         return match ($user->role) {
             'superadmin' => redirect()->route('dashboard.superadmin'),
             'admin'      => redirect()->route('dashboard.admin'),

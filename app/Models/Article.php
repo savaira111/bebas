@@ -33,10 +33,46 @@ class Article extends Model
         'published_at' => 'datetime',
     ];
 
+    protected $withCount = ['likes', 'comments'];
+
     protected static function booted()
     {
         static::creating(function ($article) {
             $article->slug = Str::slug($article->title);
         });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    // Relationships
+    public function likes()
+    {
+        return $this->hasMany(ArticleLike::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->latest();
+    }
+
+    // Helpers
+    public function isLikedBy(?User $user)
+    {
+        if (!$user) return false;
+        return $this->likes()->where('user_id', $user->id)->exists();
+    }
+
+    // Scopes
+    public function scopePopular($query)
+    {
+        return $query->withCount('likes')->orderBy('likes_count', 'desc');
+    }
+
+    public function scopeMostViewed($query)
+    {
+        return $query->orderBy('views', 'desc');
     }
 }

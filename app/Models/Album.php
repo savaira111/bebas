@@ -30,4 +30,12 @@ class Album extends Model
     {
         return $this->hasMany(AlbumPhoto::class, 'album_id', 'id');
     }
+
+    /**
+     * Get the galleries for the album.
+     */
+    public function galleries()
+    {
+        return $this->hasMany(Gallery::class, 'album_id', 'id');
+    }
 }

@@ -22,9 +22,38 @@ use App\Http\Controllers\EbookController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return redirect()->route('login');
+Route::get('/', [\App\Http\Controllers\LandingController::class, 'index'])->name('home');
+
+/*
+|--------------------------------------------------------------------------
+| PUBLIC PAGES
+|--------------------------------------------------------------------------
+*/
+Route::controller(\App\Http\Controllers\LandingController::class)->group(function () {
+    Route::get('/about', 'about')->name('landing.about');
+    Route::get('/shop', 'products')->name('landing.products');
+    Route::get('/shop/{product}', 'show')->name('landing.products.show');
+    Route::get('/portfolio', 'albums')->name('landing.galleries');
+    Route::get('/portfolio/{album}', 'albumGalleries')->name('landing.album.galleries');
+    Route::get('/portfolio/{album}/{gallery}', 'galleryDetail')->name('landing.gallery.detail');
+    Route::get('/artikel', 'articles')->name('landing.articles');
+    Route::get('/artikel/{article}', 'showArticle')->name('landing.articles.show');
+    Route::post('/artikel/{article}/like', 'likeArticle')->middleware('auth')->name('landing.articles.like');
+    Route::post('/artikel/{article}/comment', 'commentArticle')->middleware('auth')->name('landing.articles.comment');
+    
+    // Legacy Redirect
+    Route::get('/blog', function() {
+        return redirect()->route('landing.articles');
+    });
+    Route::get('/library', 'ebooks')->name('landing.ebooks');
+    Route::get('/library/{ebook}', 'showEbook')->name('landing.ebooks.show');
+    Route::post('/library/{ebook}/download', 'downloadEbook')->middleware('auth')->name('landing.ebooks.download');
+    Route::get('/contact', 'contact')->name('landing.contact');
 });
+
+Route::get('/login-redirect', function () {
+    return redirect()->route('login');
+})->name('login.redirect');
 
 /*
 |--------------------------------------------------------------------------

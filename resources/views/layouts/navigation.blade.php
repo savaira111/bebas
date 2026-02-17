@@ -116,9 +116,13 @@
                             class="absolute right-0 z-50 mt-2 w-48 rounded-2xl shadow-xl bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none"
                             style="display: none;">
                         
-                         <div class="block px-4 py-2 text-xs text-gray-400 font-serif border-b border-gray-50">
+                        <div class="block px-4 py-2 text-xs text-gray-400 font-serif border-b border-gray-50">
                             {{ __('Manage Account') }}
                         </div>
+
+                        <a href="{{ route('home') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-[#c29595] transition">
+                            {{ __('Landing Page') }}
+                        </a>
 
                         <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-[#c29595] transition">
                             {{ __('Profile') }}
