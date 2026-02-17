@@ -74,6 +74,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role === 'user';
     }
 
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
+
     // Tambahkan ini di class User, di bawah method isUser() misal
 public function sendPasswordResetNotification($token)
 {

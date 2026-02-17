@@ -89,7 +89,13 @@
                     <a href="{{ route('landing.ebooks') }}" class="nav-link text-sm uppercase tracking-wider text-gray-600 hover:text-gray-900 {{ request()->routeIs('landing.ebooks') ? 'text-pink-luxury' : '' }}">Ebooks</a>
                     
                     @auth
-                        <span class="text-sm font-serif text-gray-500">Hi, {{ Auth::user()->name }}</span>
+                        @if(Auth::user()->hasRole('superadmin'))
+                            <a href="{{ route('dashboard.superadmin') }}" class="text-sm font-serif text-pink-luxury font-bold hover:text-gray-900 transition">Hi, {{ Auth::user()->name }}</a>
+                        @elseif(Auth::user()->hasRole('admin'))
+                            <a href="{{ route('dashboard.admin') }}" class="text-sm font-serif text-pink-luxury font-bold hover:text-gray-900 transition">Hi, {{ Auth::user()->name }}</a>
+                        @else
+                            <a href="{{ route('dashboard.user') }}" class="text-sm font-serif text-gray-500 hover:text-pink-luxury transition">Hi, {{ Auth::user()->name }}</a>
+                        @endif
                     @else
                         <a href="{{ route('login') }}" class="px-4 py-2 text-sm uppercase tracking-wider text-gray-900 hover:text-pink-luxury transition font-medium">Login</a>
                         @if (Route::has('register'))
@@ -120,7 +126,13 @@
                 <a href="{{ route('landing.articles') }}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-pink-luxury hover:bg-gray-50 rounded-md">Articles</a>
                 <a href="{{ route('landing.ebooks') }}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-pink-luxury hover:bg-gray-50 rounded-md">Ebooks</a>
                 @auth
-                     <div class="block w-full text-center mt-4 px-5 py-3 text-base font-medium text-gray-500">Hi, {{ Auth::user()->name }}</div>
+                     @if(Auth::user()->hasRole('superadmin'))
+                        <a href="{{ route('dashboard.superadmin') }}" class="block w-full text-center mt-4 px-5 py-3 text-base font-bold text-pink-luxury hover:bg-gray-50 rounded-md">Hi, {{ Auth::user()->name }}</a>
+                     @elseif(Auth::user()->hasRole('admin'))
+                        <a href="{{ route('dashboard.admin') }}" class="block w-full text-center mt-4 px-5 py-3 text-base font-bold text-pink-luxury hover:bg-gray-50 rounded-md">Hi, {{ Auth::user()->name }}</a>
+                     @else
+                        <a href="{{ route('dashboard.user') }}" class="block w-full text-center mt-4 px-5 py-3 text-base font-medium text-gray-500 hover:text-pink-luxury hover:bg-gray-50 rounded-md">Hi, {{ Auth::user()->name }}</a>
+                     @endif
                 @else
                     <a href="{{ route('login') }}" class="block w-full text-center mt-4 px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">Login</a>
                     @if (Route::has('register'))
