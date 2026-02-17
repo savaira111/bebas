@@ -117,7 +117,7 @@ class ArticleController extends Controller
         $article = Article::whereNull('deleted_at')->findOrFail($id);
 
         $article->update([
-            'status' => 'published', // Standardize to 'published'
+            'status' => 'publish', // Standardize to 'published'
             'published_at' => now(),
         ]);
 

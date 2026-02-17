@@ -23,6 +23,7 @@ class EbookController extends Controller
     // Simpan e-book baru
     public function store(Request $request)
     {
+        dd($request);
         $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:ebooks,slug',

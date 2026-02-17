@@ -38,6 +38,7 @@ class GalleryController extends Controller
 
     public function store(Request $request)
     {
+        dd($request);
         $request->validate([
             'title' => 'required|string|max:255',
             'type' => 'required|in:foto,video,balance',
