@@ -74,9 +74,9 @@
                                         <p id="file-name" class="text-sm text-gray-500 font-medium">Click to upload PDF</p>
                                         <p class="text-xs text-gray-400">PDF only</p>
                                     </div>
-                                    <input id="file" name="file" type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="updateFileName(event)" required>
+                                    <input id="file" name="pdf" type="file" accept=".pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="updateFileName(event)" required>
                                 </div>
-                                @error('file') <span class="text-red-500 text-xs mt-2 block text-center">{{ $message }}</span> @enderror
+                                @error('pdf') <span class="text-red-500 text-xs mt-2 block text-center">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     </div>

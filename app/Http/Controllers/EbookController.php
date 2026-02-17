@@ -4,90 +4,102 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Ebook;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class EbookController extends Controller
 {
-    // Tampilkan daftar e-book
     public function index()
     {
         $ebooks = Ebook::latest()->paginate(10);
         return view('ebooks.index', compact('ebooks'));
     }
 
-    // Halaman create
     public function create()
     {
         return view('ebooks.create');
     }
 
-    // Simpan e-book baru
     public function store(Request $request)
     {
-        dd($request);
         $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:ebooks,slug',
-            'category' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'pdf' => 'required|mimes:pdf|max:10240',
-            'cover' => 'nullable|image|max:5120',
+            'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
-        $ebook = new Ebook();
-        $ebook->title = $request->title;
-        $ebook->slug = $request->slug;
-        $ebook->category = $request->category;
+        // Generate slug unik
+        $slug = Str::slug($request->title);
+        $count = Ebook::where('slug', 'like', "$slug%")->count();
+        $finalSlug = $count ? "{$slug}-{$count}" : $slug;
 
-        if ($request->hasFile('pdf')) {
-            $ebook->pdf = $request->file('pdf')->store('ebooks/files', 'public');
-        }
+        // Upload PDF
+        $pdfPath = $request->file('pdf')->store('ebooks/files', 'public');
 
+        // Upload Cover (optional)
+        $coverPath = null;
         if ($request->hasFile('cover')) {
-            $ebook->cover = $request->file('cover')->store('ebooks/covers', 'public');
+            $coverPath = $request->file('cover')->store('ebooks/covers', 'public');
         }
 
-        $ebook->save();
+        Ebook::create([
+            'title' => $request->title,
+            'author' => $request->author,
+            'description' => $request->description,
+            'slug' => $finalSlug,
+            'pdf' => $pdfPath,
+            'cover' => $coverPath,
+        ]);
 
         return redirect()->route('ebooks.index')
             ->with('success', 'E-Book berhasil ditambahkan.');
     }
 
-    // Halaman edit
     public function edit($id)
     {
         $ebook = Ebook::findOrFail($id);
         return view('ebooks.edit', compact('ebook'));
     }
 
-    // Update e-book
     public function update(Request $request, $id)
     {
         $ebook = Ebook::findOrFail($id);
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:ebooks,slug,' . $ebook->id,
-            'category' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'pdf' => 'nullable|mimes:pdf|max:10240',
-            'cover' => 'nullable|image|max:5120',
+            'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
+
+        $slug = Str::slug($request->title);
+        $count = Ebook::where('slug', 'like', "$slug%")
+            ->where('id', '!=', $ebook->id)
+            ->count();
 
         $data = [
             'title' => $request->title,
-            'slug' => $request->slug,
-            'category' => $request->category,
+            'author' => $request->author,
+            'description' => $request->description,
+            'slug' => $count ? "{$slug}-{$count}" : $slug,
         ];
 
         if ($request->hasFile('pdf')) {
             if ($ebook->pdf) {
-                \Storage::disk('public')->delete($ebook->pdf);
+                Storage::disk('public')->delete($ebook->pdf);
             }
+
             $data['pdf'] = $request->file('pdf')->store('ebooks/files', 'public');
         }
 
         if ($request->hasFile('cover')) {
             if ($ebook->cover) {
-                \Storage::disk('public')->delete($ebook->cover);
+                Storage::disk('public')->delete($ebook->cover);
             }
+
             $data['cover'] = $request->file('cover')->store('ebooks/covers', 'public');
         }
 
@@ -97,14 +109,22 @@ class EbookController extends Controller
             ->with('success', 'E-Book berhasil diperbarui.');
     }
 
-    // Hapus e-book (Soft Delete)
     public function destroy($id)
     {
         $ebook = Ebook::findOrFail($id);
+
+        if ($ebook->pdf) {
+            Storage::disk('public')->delete($ebook->pdf);
+        }
+
+        if ($ebook->cover) {
+            Storage::disk('public')->delete($ebook->cover);
+        }
+
         $ebook->delete();
 
         return redirect()->route('ebooks.index')
-            ->with('success', 'E-Book berhasil dihapus (Moved to Trash).');
+            ->with('success', 'E-Book berhasil dihapus.');
     }
 
     public function trashed()
@@ -124,12 +144,13 @@ class EbookController extends Controller
     public function forceDelete($id)
     {
         $ebook = Ebook::onlyTrashed()->findOrFail($id);
-        
+
         if ($ebook->pdf) {
-            \Storage::disk('public')->delete($ebook->pdf);
+            Storage::disk('public')->delete($ebook->pdf);
         }
+
         if ($ebook->cover) {
-            \Storage::disk('public')->delete($ebook->cover);
+            Storage::disk('public')->delete($ebook->cover);
         }
 
         $ebook->forceDelete();

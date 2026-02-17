@@ -15,14 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('cover')->nullable();
             $table->string('title');
+            $table->string('author');
+            $table->text('description')->nullable();
             $table->string('slug')->unique(); // tambahkan ini
-            $table->string('category');
+            $table->string('category')->nullable();
             $table->string('pdf');
             $table->integer('total_download')->default(0);
             $table->timestamps();
         });
-
-
     }
 
     /**

@@ -11,7 +11,7 @@ class Ebook extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'cover', 'title', 'category', 'pdf', 'total_download', 'slug'
+        'cover', 'title', 'author', 'description', 'pdf', 'total_download', 'slug', 
     ];
 
     protected $dates = ['deleted_at'];

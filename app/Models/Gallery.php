@@ -12,9 +12,9 @@ class Gallery extends Model
     protected $fillable = [
         'title',
         'description',
-        'type',
         'album_id',
         'category_id',
+        'image',
     ];
 
     protected $casts = [

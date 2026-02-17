@@ -9,6 +9,8 @@ return new class extends Migration {
     {
         Schema::create('galleries', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->string('image');
 
             $table->unsignedBigInteger('category_id')->nullable();
             $table->unsignedBigInteger('album_id')->nullable();
