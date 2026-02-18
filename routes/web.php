@@ -85,11 +85,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('profile.send-username-verification');
 });
 
-Route::middleware(['auth', 'verified', 'profile.complete'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.user');
-    })->name('dashboard.user');
-});
+
 
 /*
 |--------------------------------------------------------------------------

@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'profile.complete' => EnsureProfileIsComplete::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'auth/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

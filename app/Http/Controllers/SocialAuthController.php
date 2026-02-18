@@ -12,6 +12,7 @@ class SocialAuthController extends Controller
     public function redirect($provider)
     {
         return Socialite::driver($provider)
+            ->stateless()
             ->with([
                 'prompt' => 'select_account', // <= Memaksa pilih akun Google
             ])
@@ -21,7 +22,7 @@ class SocialAuthController extends Controller
     public function callback($provider)
     {
         try {
-            $socialUser = Socialite::driver($provider)->user();
+            $socialUser = Socialite::driver($provider)->stateless()->user();
 
             $user = User::where($provider . '_id', $socialUser->getId())
                         ->orWhere('email', $socialUser->getEmail())
@@ -29,8 +30,17 @@ class SocialAuthController extends Controller
 
             if (!$user) {
                 // Buat user baru + belum verified + profil belum lengkap
+                // Generate unique username
+                $baseUsername = Str::slug($socialUser->getName() ?? explode('@', $socialUser->getEmail())[0]);
+                $username = $baseUsername;
+                $counter = 1;
+                while (User::where('username', $username)->exists()) {
+                    $username = $baseUsername . $counter++;
+                }
+
                 $user = User::create([
                     'name'               => $socialUser->getName(),
+                    'username'           => $username, // <= Added username
                     'email'              => $socialUser->getEmail(),
                     'password'           => bcrypt(Str::random(16)),
                     'role'               => 'user',
@@ -72,6 +82,6 @@ class SocialAuthController extends Controller
     {
         if ($user->role === 'superadmin') return redirect()->route('dashboard.superadmin');
         if ($user->role === 'admin')      return redirect()->route('dashboard.admin');
-        return redirect()->route('dashboard.user');
+        return redirect()->route('home');
     }
 }
