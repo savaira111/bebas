@@ -115,7 +115,9 @@
                                     <a href="{{ route('dashboard.admin') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-luxury transition">Dashboard</a>
                                 @endif
 
-                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-luxury transition">Profil</a>
+                                @if(Auth::user()->hasRole('user'))
+                                    <a href="{{ route('user.articles.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-luxury transition">Artikel Saya</a>
+                                @endif
                                 
                                 <div class="border-t border-gray-100 my-1"></div>
                                 
@@ -176,7 +178,9 @@
                             @elseif(Auth::user()->hasRole('admin'))
                                 <a href="{{ route('dashboard.admin') }}" class="block px-3 py-2 text-base font-medium text-gray-600 hover:text-pink-luxury hover:bg-gray-50 rounded-md transition">Dashboard</a>
                             @endif
-                            <a href="{{ route('profile.edit') }}" class="block px-3 py-2 text-base font-medium text-gray-600 hover:text-pink-luxury hover:bg-gray-50 rounded-md transition">Profil</a>
+                            @if(Auth::user()->hasRole('user'))
+                                <a href="{{ route('user.articles.index') }}" class="block px-3 py-2 text-base font-medium text-gray-600 hover:text-pink-luxury hover:bg-gray-50 rounded-md transition">Artikel Saya</a>
+                            @endif
                             
                              <form method="POST" action="{{ route('logout') }}">
                                 @csrf

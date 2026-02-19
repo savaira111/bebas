@@ -23,20 +23,10 @@
                                 $activeClasses = "inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out h-full border-[#d4a5a5] text-[#c29595] focus:outline-none focus:border-[#d4a5a5]";
                             @endphp
 
-                            <!-- ROLE: USER -->
-                            @if(Auth::user()->role === 'user')
-                                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? $activeClasses : $navClasses }}">
-                                    Home
-                                </a>
-                                <a href="{{ route('articles.index') }}" class="{{ request()->routeIs('articles.*') ? $activeClasses : $navClasses }}">
-                                    Articles
-                                </a>
-                                <a href="{{ route('galleries.index') }}" class="{{ request()->routeIs('galleries.*') ? $activeClasses : $navClasses }}">
-                                    Galleries
-                                </a>
+
 
                             <!-- ROLE: ADMIN & SUPERADMIN -->
-                            @elseif(Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin')
+                            @if(Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin')
                                 
                                 @php
                                     $dashboardRoute = Auth::user()->role === 'superadmin' ? 'dashboard.superadmin' : 'dashboard.admin';
@@ -119,14 +109,13 @@
                             {{ __('Landing Page') }}
                         </a>
 
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-[#c29595] transition">
-                            {{ __('Profile') }}
-                        </a>
 
-                        <form method="POST" action="{{ route('logout') }}">
+
+
+                        <form id="logout-form" method="POST" action="{{ route('logout') }}">
                             @csrf
                             <a href="{{ route('logout') }}"
-                               onclick="event.preventDefault(); this.closest('form').submit();"
+                               onclick="event.preventDefault(); confirmLogout();"
                                class="block px-4 py-2 text-sm text-red-400 hover:bg-red-50 hover:text-red-600 transition">
                                 {{ __('Log Out') }}
                             </a>
@@ -142,4 +131,30 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        function confirmLogout() {
+            Swal.fire({
+                title: 'Logout?',
+                text: "Apakah Anda yakin ingin keluar?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d4a5a5',
+                cancelButtonColor: '#f3f4f6',
+                confirmButtonText: 'Ya, Logout',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'text-white px-6 py-2 rounded-full font-bold text-xs uppercase tracking-wider',
+                    cancelButton: 'text-gray-600 px-6 py-2 rounded-full font-bold text-xs uppercase tracking-wider hover:bg-gray-100'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            })
+        }
+    </script>
+    @endpush
 </nav>

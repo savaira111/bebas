@@ -3,56 +3,15 @@
 @section('title', $article->title)
 
 @section('content')
-    {{-- Auth Modal for Guest Actions --}}
-    <div x-data="{ open: false }" 
-         x-on:login-required.window="open = true"
-         x-show="open" 
-         class="fixed inset-0 z-[100] flex items-center justify-center px-4" 
-         style="display: none;">
-        
-        {{-- Backdrop --}}
-        <div x-show="open" 
-             x-transition:enter="ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             @click="open = false"
-             class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"></div>
-
-        {{-- Modal Panel --}}
-        <div x-show="open" 
-             x-transition:enter="ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95 translate-y-4"
-             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-             x-transition:leave="ease-in duration-200"
-             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-             x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-             class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full relative z-10 text-center transform transition-all">
-            
-            <div class="mb-4">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-pink-soft">
-                    <svg class="h-6 w-6 text-pink-luxury" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </div>
-            </div>
-            
-            <h3 class="text-lg font-serif font-medium text-gray-900 mb-2">Login Required</h3>
-            <p class="text-sm text-gray-500 mb-6">Please sign in to like or comment on this article.</p>
-            
-            <div class="flex flex-col space-y-3">
-                <a href="{{ route('login') }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition">
-                    Sign In
-                </a>
-                <button @click="open = false" class="text-sm text-gray-500 hover:text-gray-900 transition">
-                    Maybe later
-                </button>
-            </div>
-        </div>
-    </div>
-
-    {{-- Article Header --}}
     <article class="pt-10 pb-20 bg-white">
+        {{-- Top Navigation / Back Button --}}
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-8" data-aos="fade-right">
+             <a href="{{ route('landing.articles') }}" class="group inline-flex items-center text-gray-500 hover:text-pink-luxury transition-colors">
+                <svg class="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <span class="text-xs uppercase tracking-widest font-medium">Back to Articles</span>
+            </a>
+        </div>
+
         <header class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
             @if($article->category)
                 <a href="{{ route('landing.articles', ['category' => $article->category->id]) }}" class="inline-block px-3 py-1 mb-6 text-xs font-bold tracking-widest text-pink-luxury uppercase bg-pink-soft rounded-full hover:bg-pink-200 transition">
@@ -64,10 +23,14 @@
                 {{ $article->title }}
             </h1>
 
-            <div class="flex items-center justify-center text-sm text-gray-500 space-x-6">
+            <div class="flex items-center justify-center text-sm text-gray-500 space-x-6" data-aos="fade-up">
                 <span class="flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     {{ $article->created_at->format('M d, Y') }}
+                </span>
+                <span class="flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    {{ $article->user->name ?? 'Author' }}
                 </span>
                 <span class="flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
@@ -93,14 +56,37 @@
                 {!! $article->content !!}
             </div>
 
+            {{-- Reviewer Note for Author --}}
+            @auth
+                @if($article->user_id == auth()->id() && $article->status != 'published' && $article->reviewer_note)
+                    <div class="mb-16 bg-red-50 border-l-4 border-red-400 p-6 rounded-r-2xl shadow-sm animate-pulse-slow">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-sm font-bold text-red-700 uppercase tracking-widest mb-2">Feedback Peninjau:</h4>
+                                <p class="text-red-600 italic leading-relaxed">"{{ $article->reviewer_note }}"</p>
+                                <div class="mt-4">
+                                    <a href="{{ route('user.articles.edit', $article) }}" class="text-xs font-bold text-red-700 hover:text-red-800 uppercase tracking-widest border-b border-red-200 pb-1">Revise Article →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @endauth
+
             {{-- Engagement Section --}}
             <div class="border-t border-b border-gray-100 py-8 mb-16 flex items-center justify-between">
                 <div class="flex items-center space-x-6">
                     {{-- Like Button --}}
-                    <form action="{{ route('landing.articles.like', $article) }}" method="POST" 
-                          @guest @submit.prevent="$dispatch('login-required')" @endguest>
+                    <form id="likeform" action="{{ route('landing.articles.like', $article) }}" method="POST">
                         @csrf
-                        <button type="submit" class="group flex items-center space-x-2 focus:outline-none transition-colors {{ $article->isLikedBy(auth()->user()) ? 'text-pink-500' : 'text-gray-500 hover:text-pink-500' }}">
+                        <button type="submit" 
+                                @guest onclick="handleLike(event)" @endguest
+                                class="group flex items-center space-x-2 focus:outline-none transition-colors {{ $article->isLikedBy(auth()->user()) ? 'text-pink-500' : 'text-gray-500 hover:text-pink-500' }}">
                             <div class="p-2 rounded-full group-hover:bg-pink-50 transition-colors {{ $article->isLikedBy(auth()->user()) ? 'bg-pink-50' : '' }}">
                                 <svg class="w-6 h-6 {{ $article->isLikedBy(auth()->user()) ? 'fill-current' : 'fill-none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                             </div>
@@ -117,11 +103,10 @@
                     </div>
                 </div>
 
-                {{-- Share / Back --}}
-                <a href="{{ route('landing.articles') }}" class="text-sm uppercase tracking-wider font-medium text-gray-500 hover:text-gray-900 transition flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Back to Articles
-                </a>
+                {{-- Share --}}
+                <div class="flex items-center space-x-4">
+                    {{-- Could add share buttons here if needed --}}
+                </div>
             </div>
 
             {{-- Comments Section --}}
@@ -146,8 +131,8 @@
                         </form>
                     @else
                         <div class="text-center py-6">
-                            <p class="text-gray-500 mb-4">Join the conversation by signing in.</p>
-                            <button @click="$dispatch('login-required')" class="px-6 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-full hover:bg-white hover:border-gray-400 transition bg-white">
+                            <p class="text-gray-500 mb-4 font-light">Join the conversation by signing in.</p>
+                            <button onclick="handleComment()" class="px-8 py-2 border border-gray-300 text-gray-700 text-xs font-bold uppercase tracking-widest rounded-full hover:bg-white hover:border-gray-400 transition bg-white shadow-sm">
                                 Sign In to Comment
                             </button>
                         </div>
@@ -172,13 +157,13 @@
                                     <h4 class="text-sm font-bold text-gray-900">{{ $comment->user->name }}</h4>
                                     <span class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
                                 </div>
-                                <div class="text-sm text-gray-600 leading-relaxed">
+                                <div class="text-sm text-gray-600 leading-relaxed font-light">
                                     {{ $comment->content }}
                                 </div>
                             </div>
                         </div>
                     @empty
-                        <div class="text-center text-gray-400 py-8 italic">
+                        <div class="text-center text-gray-400 py-8 italic font-light">
                             No comments yet. Be the first to share your thoughts!
                         </div>
                     @endforelse
@@ -186,4 +171,58 @@
             </div>
         </div>
     </article>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function handleLike(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: '<span class="font-serif text-2xl text-gray-900">Login Required</span>',
+                html: '<p class="text-gray-500 font-light mt-2">Sila log masuk terlebih dahulu untuk menyukai artikel ini.</p>',
+                confirmButtonText: 'LOGIN SEKARANG',
+                confirmButtonColor: '#111827',
+                background: '#ffffff',
+                color: '#374151',
+                showCancelButton: true,
+                cancelButtonText: 'BATAL',
+                cancelButtonColor: '#9ca3af',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'px-6 py-3 bg-gray-900 text-white text-xs uppercase tracking-widest font-bold rounded-sm hover:bg-pink-luxury transition-colors mr-2',
+                    cancelButton: 'px-6 py-3 bg-gray-200 text-gray-600 text-xs uppercase tracking-widest font-bold rounded-sm hover:bg-gray-300 transition-colors',
+                    popup: 'rounded-lg shadow-xl border-t-4 border-pink-luxury'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const currentUrl = window.location.href;
+                    window.location.href = "{{ route('login') }}?return_url=" + encodeURIComponent(currentUrl);
+                }
+            });
+        }
+
+        function handleComment() {
+             Swal.fire({
+                title: '<span class="font-serif text-2xl text-gray-900">Login Required</span>',
+                html: '<p class="text-gray-500 font-light mt-2">Sila log masuk terlebih dahulu untuk memberikan komen.</p>',
+                confirmButtonText: 'LOGIN SEKARANG',
+                confirmButtonColor: '#111827',
+                background: '#ffffff',
+                color: '#374151',
+                showCancelButton: true,
+                cancelButtonText: 'BATAL',
+                cancelButtonColor: '#9ca3af',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'px-6 py-3 bg-gray-900 text-white text-xs uppercase tracking-widest font-bold rounded-sm hover:bg-pink-luxury transition-colors mr-2',
+                    cancelButton: 'px-6 py-3 bg-gray-200 text-gray-600 text-xs uppercase tracking-widest font-bold rounded-sm hover:bg-gray-300 transition-colors',
+                    popup: 'rounded-lg shadow-xl border-t-4 border-pink-luxury'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const currentUrl = window.location.href;
+                    window.location.href = "{{ route('login') }}?return_url=" + encodeURIComponent(currentUrl);
+                }
+            });
+        }
+    </script>
 @endsection

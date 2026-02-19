@@ -25,8 +25,14 @@ class LandingController extends Controller
         // Most Viewed Gallery (Proxy: Latest 6 for now as views is missing)
         $galleries = Gallery::with('photos')->latest()->take(6)->get();
 
-        // Most Read Articles (Using views column)
-        $articles = Article::orderBy('views', 'desc')->take(3)->get();
+        // Most Read Articles (Only from regular users, excluding admins)
+        $articles = Article::where('status', 'published')
+            ->whereHas('user', function($q) {
+                $q->where('role', 'user');
+            })
+            ->orderBy('views', 'desc')
+            ->take(3)
+            ->get();
 
         // Most Downloaded Ebooks (Using total_download column)
         $ebooks = Ebook::orderBy('total_download', 'desc')->take(3)->get();
@@ -79,7 +85,10 @@ class LandingController extends Controller
 
     public function articles(Request $request)
     {
-        $query = Article::query();
+        $query = Article::where('status', 'published')
+            ->whereHas('user', function($q) {
+                $q->where('role', 'user');
+            });
 
         // 1. Filter by Category
         if ($request->has('category')) {
@@ -112,8 +121,8 @@ class LandingController extends Controller
         // Increment views
         $article->increment('views');
 
-        // Load comments with user info
-        $article->load(['comments.user', 'category']);
+        // Load comments with user info, category, and author
+        $article->load(['comments.user', 'category', 'user']);
 
         return view('landing.article-detail', compact('article'));
     }

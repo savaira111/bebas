@@ -11,17 +11,24 @@ class Article extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'title',
         'slug',
         'content',
         'image',
         'status',
+        'reviewer_note',
         'meta_title',
         'meta_keywords',
         'meta_description',
         'published_at',
         'category_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function category()
     {

@@ -7,6 +7,22 @@
     <div class="bg-gradient-to-b from-pink-soft/40 to-white py-16 text-center">
         <h1 class="font-serif text-4xl md:text-5xl text-gray-900 mb-3" data-aos="fade-up">Artikel</h1>
         <p class="text-gray-500 uppercase tracking-widest text-sm" data-aos="fade-up" data-aos-delay="100">Beauty tips, trends, and news</p>
+        
+        {{-- Add Article Button --}}
+        <div class="mt-8" data-aos="fade-up" data-aos-delay="200">
+            @auth
+                <a href="{{ route('user.articles.create') }}" class="inline-flex items-center px-8 py-3 rounded-full text-white font-medium shadow-lg hover:shadow-xl transform transition hover:-translate-y-0.5" style="background: linear-gradient(135deg, #d4a5a5 0%, #c29595 100%);">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    Tulis Artikel
+                </a>
+            @else
+                <button onclick="promptLoginForArticle()" class="inline-flex items-center px-8 py-3 rounded-full text-white font-medium shadow-lg hover:shadow-xl transform transition hover:-translate-y-0.5" style="background: linear-gradient(135deg, #d4a5a5 0%, #c29595 100%);">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Tulis Artikel
+                </button>
+            @endauth
+        </div>
+
         <div class="w-20 h-0.5 bg-pink-luxury mx-auto mt-6" data-aos="fade-up" data-aos-delay="150"></div>
     </div>
 
@@ -82,6 +98,10 @@
                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                     {{ $article->created_at->format('M d, Y') }}
                                 </div>
+                                <div class="flex items-center">
+                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    {{ $article->user->name ?? 'Author' }}
+                                </div>
                             </div>
 
                             <h2 class="font-serif text-2xl text-gray-900 mb-3 leading-tight group-hover:text-pink-luxury transition-colors duration-300">
@@ -131,4 +151,30 @@
             @endif
         </div>
     </section>
+
+    @push('scripts')
+    <script>
+        function promptLoginForArticle() {
+            Swal.fire({
+                title: 'Ingin Menulis Artikel?',
+                text: "Silakan login terlebih dahulu untuk mulai berkontribusi.",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#d4a5a5',
+                cancelButtonColor: '#f3f4f6',
+                confirmButtonText: 'Login Sekarang',
+                cancelButtonText: 'Nanti Saja',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'text-white px-6 py-2 rounded-full font-bold text-xs uppercase tracking-wider',
+                    cancelButton: 'text-gray-600 px-6 py-2 rounded-full font-bold text-xs uppercase tracking-wider hover:bg-gray-100'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('login') }}?return_url=" + encodeURIComponent(window.location.href);
+                }
+            })
+        }
+    </script>
+    @endpush
 @endsection

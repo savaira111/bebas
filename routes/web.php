@@ -12,6 +12,7 @@ use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\AlbumPhotoController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\UserArticleController;
 use App\Http\Controllers\TrashController;
 use App\Models\User;
 use App\Http\Controllers\EbookController;
@@ -92,6 +93,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/send-username-verification',
         [ProfileController::class, 'sendUsernameVerification']
     )->name('profile.send-username-verification');
+
+    // User Article Submission
+    Route::prefix('user')->name('user.')->group(function () {
+        Route::resource('articles', UserArticleController::class);
+        Route::post('articles/{id}/submit', [UserArticleController::class, 'submit'])->name('articles.submit');
+    });
 });
 
 /*
@@ -257,16 +264,20 @@ Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'
 | ARTICLES
 |--------------------------------------------------------------------------
 */
-Route::post('articles/{article}/publish', [ArticleController::class, 'publish'])
+Route::post('articles/{id}/publish', [ArticleController::class, 'publish'])
     ->name('articles.publish');
+
+Route::post('articles/{article}/review', [ArticleController::class, 'review'])
+    ->middleware(['auth', 'role:admin,superadmin'])
+    ->name('articles.review');
 
 Route::get('articles/trashed', [ArticleController::class, 'trashed'])
     ->name('articles.trashed');
 
-Route::post('articles/{article}/restore', [ArticleController::class, 'restore'])
+Route::post('articles/{id}/restore', [ArticleController::class, 'restore'])
     ->name('articles.restore');
 
-Route::delete('articles/{article}/force-delete', [ArticleController::class, 'forceDelete'])
+Route::delete('articles/{id}/force-delete', [ArticleController::class, 'forceDelete'])
     ->name('articles.forceDelete');
 
 Route::resource('articles', ArticleController::class);

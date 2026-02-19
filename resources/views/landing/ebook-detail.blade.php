@@ -67,17 +67,11 @@
                         {{-- Actions --}}
                         <div class="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t border-gray-100">
                             {{-- View Ebook (Open in New Tab) --}}
-                             @if($ebook->pdf)
-                                <a href="{{ asset('storage/' . $ebook->pdf) }}" target="_blank" 
-                                   class="flex-1 py-4 px-6 rounded-sm border border-gray-300 text-gray-600 hover:text-gray-900 hover:border-gray-900 text-center text-xs font-bold tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                    Preview
-                                </a>
-                            @endif
+
 
                             {{-- Download Ebook --}}
                             <button onclick="handleDownload()" 
-                                    class="flex-1 py-4 px-6 rounded-sm bg-gray-900 text-white hover:bg-pink-luxury hover:text-white font-bold tracking-widest uppercase shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                    class="w-full py-4 px-6 rounded-sm bg-gray-900 text-white hover:bg-pink-luxury hover:text-white font-bold tracking-widest uppercase shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                 Download Guide
                             </button>
