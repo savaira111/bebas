@@ -16,80 +16,80 @@
 
                 <!-- Link Navigasi -->
                 <div class="hidden space-x-1 sm:-my-px sm:ms-10 sm:flex items-center h-full">
-                    @auth
-                        @php
-                            $navClasses = "inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out h-full border-transparent text-gray-500 hover:text-[#d4a5a5] hover:border-[#d4a5a5] focus:outline-none focus:text-[#d4a5a5] focus:border-[#d4a5a5]";
-                            $activeClasses = "inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out h-full border-[#d4a5a5] text-[#c29595] focus:outline-none focus:border-[#d4a5a5]";
-                        @endphp
-
-                        <!-- ROLE: USER -->
-                        @if(Auth::user()->role === 'user')
-                            <a href="{{ route('dashboard.user') }}" class="{{ request()->routeIs('dashboard.user') ? $activeClasses : $navClasses }}">
-                                Dashboard
-                            </a>
-                            <a href="{{ route('articles.index') }}" class="{{ request()->routeIs('articles.*') ? $activeClasses : $navClasses }}">
-                                Articles
-                            </a>
-                            <a href="{{ route('galleries.index') }}" class="{{ request()->routeIs('galleries.*') ? $activeClasses : $navClasses }}">
-                                Galleries
-                            </a>
-                             <!-- Add other user links here -->
-
-
-                        <!-- ROLE: ADMIN & SUPERADMIN -->
-                        @elseif(Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin')
-                            
+                    @unless(request()->routeIs('profile.edit'))
+                        @auth
                             @php
-                                $dashboardRoute = Auth::user()->role === 'superadmin' ? 'dashboard.superadmin' : 'dashboard.admin';
+                                $navClasses = "inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out h-full border-transparent text-gray-500 hover:text-[#d4a5a5] hover:border-[#d4a5a5] focus:outline-none focus:text-[#d4a5a5] focus:border-[#d4a5a5]";
+                                $activeClasses = "inline-flex items-center px-4 py-2 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out h-full border-[#d4a5a5] text-[#c29595] focus:outline-none focus:border-[#d4a5a5]";
                             @endphp
 
-                            <a href="{{ route($dashboardRoute) }}" class="{{ request()->routeIs($dashboardRoute) ? $activeClasses : $navClasses }}">
-                                Dashboard
-                            </a>
-
-                            <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? $activeClasses : $navClasses }}">
-                                Products
-                            </a>
-
-                            <a href="{{ route('categories.index') }}" class="{{ request()->routeIs('categories.*') ? $activeClasses : $navClasses }}">
-                                Categories
-                            </a>
-
-                            <a href="{{ route('articles.index') }}" class="{{ request()->routeIs('articles.*') ? $activeClasses : $navClasses }}">
-                                Articles
-                            </a>
-
-                            <a href="{{ route('albums.index') }}" class="{{ request()->routeIs('albums.*') ? $activeClasses : $navClasses }}">
-                                Albums
-                            </a>
-
-                            <a href="{{ route('galleries.index') }}" class="{{ request()->routeIs('galleries.*') ? $activeClasses : $navClasses }}">
-                                Galleries
-                            </a>
-                             <a href="{{ route('ebooks.index') }}" class="{{ request()->routeIs('ebooks.*') ? $activeClasses : $navClasses }}">
-                                E-Books
-                            </a>
-
-                            @if(Auth::user()->role === 'superadmin')
-                                <a href="{{ route('superadmin.users.index') }}" class="{{ request()->routeIs('superadmin.users.*') ? $activeClasses : $navClasses }}">
-                                    Users
+                            <!-- ROLE: USER -->
+                            @if(Auth::user()->role === 'user')
+                                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? $activeClasses : $navClasses }}">
+                                    Home
                                 </a>
-                            @endif
-                            
-                            @if(Auth::user()->role === 'admin')
-                                <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? $activeClasses : $navClasses }}">
-                                    Users
+                                <a href="{{ route('articles.index') }}" class="{{ request()->routeIs('articles.*') ? $activeClasses : $navClasses }}">
+                                    Articles
                                 </a>
-                            @endif
+                                <a href="{{ route('galleries.index') }}" class="{{ request()->routeIs('galleries.*') ? $activeClasses : $navClasses }}">
+                                    Galleries
+                                </a>
 
-                        @endif
-                    @endauth
+                            <!-- ROLE: ADMIN & SUPERADMIN -->
+                            @elseif(Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin')
+                                
+                                @php
+                                    $dashboardRoute = Auth::user()->role === 'superadmin' ? 'dashboard.superadmin' : 'dashboard.admin';
+                                @endphp
+
+                                <a href="{{ route($dashboardRoute) }}" class="{{ request()->routeIs($dashboardRoute) ? $activeClasses : $navClasses }}">
+                                    Dashboard
+                                </a>
+
+                                <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? $activeClasses : $navClasses }}">
+                                    Products
+                                </a>
+
+                                <a href="{{ route('categories.index') }}" class="{{ request()->routeIs('categories.*') ? $activeClasses : $navClasses }}">
+                                    Categories
+                                </a>
+
+                                <a href="{{ route('articles.index') }}" class="{{ request()->routeIs('articles.*') ? $activeClasses : $navClasses }}">
+                                    Articles
+                                </a>
+
+                                <a href="{{ route('albums.index') }}" class="{{ request()->routeIs('albums.*') ? $activeClasses : $navClasses }}">
+                                    Albums
+                                </a>
+
+                                <a href="{{ route('galleries.index') }}" class="{{ request()->routeIs('galleries.*') ? $activeClasses : $navClasses }}">
+                                    Galleries
+                                </a>
+
+                                <a href="{{ route('ebooks.index') }}" class="{{ request()->routeIs('ebooks.*') ? $activeClasses : $navClasses }}">
+                                    E-Books
+                                </a>
+
+                                @if(Auth::user()->role === 'superadmin')
+                                    <a href="{{ route('superadmin.users.index') }}" class="{{ request()->routeIs('superadmin.users.*') ? $activeClasses : $navClasses }}">
+                                        Users
+                                    </a>
+                                @endif
+                                
+                                @if(Auth::user()->role === 'admin')
+                                    <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? $activeClasses : $navClasses }}">
+                                        Users
+                                    </a>
+                                @endif
+
+                            @endif
+                        @endauth
+                    @endunless
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <!-- User Profile -->
                  @auth
                 <div class="relative" x-data="{ open: false }" @click.away="open = false" @close.stop="open = false">
                     <button @click="open = ! open" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150 gap-2">
@@ -107,12 +107,7 @@
                     </button>
 
                     <div x-show="open"
-                            x-transition:enter="transition ease-out duration-200"
-                            x-transition:enter-start="transform opacity-0 scale-95"
-                            x-transition:enter-end="transform opacity-100 scale-100"
-                            x-transition:leave="transition ease-in duration-75"
-                            x-transition:leave-start="transform opacity-100 scale-100"
-                            x-transition:leave-end="transform opacity-0 scale-95"
+                            x-transition
                             class="absolute right-0 z-50 mt-2 w-48 rounded-2xl shadow-xl bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none"
                             style="display: none;">
                         
@@ -145,56 +140,6 @@
                     @endif
                 @endauth
             </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
         </div>
-    </div>
-
-    <!-- Responsive Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white border-t border-gray-100">
-        <div class="pt-2 pb-3 space-y-1">
-             <!-- Mobile Links here (simplified for brevity, mirroring desktop logic) -->
-              @auth
-                @php
-                    $navClassesMobile = "block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 hover:text-[#d4a5a5] hover:bg-pink-50 hover:border-[#d4a5a5] transition duration-150 ease-in-out";
-                    $activeClassesMobile = "block w-full ps-3 pe-4 py-2 border-l-4 border-[#d4a5a5] text-start text-base font-medium text-[#c29595] bg-pink-50 focus:outline-none transition duration-150 ease-in-out";
-                @endphp
-                 <!-- ... Similar Logic for Mobile ... -->
-                 @if(Auth::user()->role === 'superadmin' || Auth::user()->role === 'admin')
-                    <a href="{{ route('products.index') }}" class="{{ request()->routeIs('products.*') ? $activeClassesMobile : $navClassesMobile }}"> Products </a>
-                 @endif
-
-              @endauth
-        </div>
-        
-        <!-- Mobile Settings -->
-        @auth
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <a href="{{ route('profile.edit') }}" class="block w-full ps-3 pe-4 py-2 text-start text-base font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-50 transition">
-                    {{ __('Profile') }}
-                </a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" class="block w-full ps-3 pe-4 py-2 text-start text-base font-medium text-red-600 hover:text-red-800 hover:bg-red-50 transition">
-                        {{ __('Log Out') }}
-                    </a>
-                </form>
-            </div>
-        </div>
-        @endauth
     </div>
 </nav>

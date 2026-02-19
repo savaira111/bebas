@@ -9,10 +9,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Http;
-
 
 class RegisteredUserController extends Controller
 {
@@ -68,19 +66,23 @@ class RegisteredUserController extends Controller
 
         // ✅ CREATE USER
         $user = User::create([
-            'name' => $request->name,           // ✅ FIX
+            'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'user',
             'email_verified_at' => now(),
             'is_profile_complete' => false,
+            'is_active' => 1, // aktif langsung setelah register
         ]);
 
         event(new Registered($user));
+
+        // ✅ LOGIN OTOMATIS
         Auth::login($user);
 
-        return redirect()->route('profile.edit')
-            ->with('success', 'Registrasi berhasil! Silakan lengkapi profil Anda.');
+        // ✅ REDIRECT KE LANDING PAGE
+        return redirect()->route('home')
+            ->with('success', 'Registrasi berhasil! Selamat datang.');
     }
 }

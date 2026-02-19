@@ -37,6 +37,7 @@
                             <th class="px-8 py-5 uppercase text-xs">No</th>
                             <th class="px-8 py-5 uppercase text-xs">Title</th>
                             <th class="px-8 py-5 uppercase text-xs">Author</th>
+                            <th class="px-8 py-5 uppercase text-xs">Access</th>
                             <th class="px-8 py-5 uppercase text-xs">Cover</th>
                             <th class="px-8 py-5 uppercase text-xs">File</th>
                             <th class="px-8 py-5 uppercase text-xs">Created At</th>
@@ -52,6 +53,13 @@
                                 </td>
                                 <td class="px-8 py-4 text-sm text-gray-500">
                                     {{ $ebook->author }}
+                                </td>
+                                <td class="px-8 py-4">
+                                    @if($ebook->is_auth_required)
+                                        <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700 border border-red-200">Login Required</span>
+                                    @else
+                                        <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 border border-green-200">Public</span>
+                                    @endif
                                 </td>
                                 <td class="px-8 py-4">
                                     @if($ebook->cover)
@@ -108,14 +116,14 @@
     <script>
         function confirmDelete(id) {
             Swal.fire({
-                title: 'Are you sure?',
-                text: "The e-book will be deleted.",
+                title: 'Apakah Anda yakin?',
+                text: "E-book akan dihapus secara permanen.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d4a5a5',
                 cancelButtonColor: '#f3f4f6',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'No',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
                 reverseButtons: true,
                 customClass: {
                     confirmButton: 'text-white px-4 py-2 rounded-lg',

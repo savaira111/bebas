@@ -11,36 +11,55 @@ class SocialAuthController extends Controller
 {
     public function redirect($provider)
     {
+        if (!in_array($provider, ['google'])) {
+            abort(404);
+        }
+
         return Socialite::driver($provider)
             ->stateless()
             ->with([
-                'prompt' => 'select_account', // <= Memaksa pilih akun Google
+                'prompt' => 'select_account',
             ])
             ->redirect();
     }
 
     public function callback($provider)
     {
+        if (!in_array($provider, ['google'])) {
+            abort(404);
+        }
+
         try {
             $socialUser = Socialite::driver($provider)->stateless()->user();
 
+            if (!$socialUser->getEmail()) {
+                return redirect()->route('login')
+                    ->with('error', 'Email tidak tersedia dari akun ' . ucfirst($provider));
+            }
+
             $user = User::where($provider . '_id', $socialUser->getId())
-                        ->orWhere('email', $socialUser->getEmail())
-                        ->first();
+                ->orWhere('email', $socialUser->getEmail())
+                ->first();
 
             if (!$user) {
-                // Buat user baru + belum verified + profil belum lengkap
+
                 // Generate unique username
-                $baseUsername = Str::slug($socialUser->getName() ?? explode('@', $socialUser->getEmail())[0]);
+                $baseUsername = Str::slug(
+                    $socialUser->getName() 
+                    ?? explode('@', $socialUser->getEmail())[0]
+                );
+
                 $username = $baseUsername;
                 $counter = 1;
+
                 while (User::where('username', $username)->exists()) {
-                    $username = $baseUsername . $counter++;
+                    $username = $baseUsername . $counter;
+                    $counter++;
                 }
 
                 $user = User::create([
-                    'name'               => $socialUser->getName(),
-                    'username'           => $username, // <= Added username
+                    'name'               => $socialUser->getName() ?? $username,
+                    'username'           => $username,
                     'email'              => $socialUser->getEmail(),
                     'password'           => bcrypt(Str::random(16)),
                     'role'               => 'user',
@@ -56,6 +75,7 @@ class SocialAuthController extends Controller
                     ->with('success', 'Akun berhasil dibuat! Silakan lengkapi profil Anda.');
             }
 
+            // Update provider id jika belum ada
             if (empty($user->{$provider . '_id'})) {
                 $user->update([
                     $provider . '_id' => $socialUser->getId(),
@@ -73,6 +93,7 @@ class SocialAuthController extends Controller
             return $this->redirectBasedOnRole($user);
 
         } catch (\Exception $e) {
+
             return redirect()->route('login')
                 ->with('error', 'Gagal login dengan ' . ucfirst($provider));
         }
@@ -80,8 +101,14 @@ class SocialAuthController extends Controller
 
     protected function redirectBasedOnRole($user)
     {
-        if ($user->role === 'superadmin') return redirect()->route('dashboard.superadmin');
-        if ($user->role === 'admin')      return redirect()->route('dashboard.admin');
+        if ($user->role === 'superadmin') {
+            return redirect()->route('dashboard.superadmin');
+        }
+
+        if ($user->role === 'admin') {
+            return redirect()->route('dashboard.admin');
+        }
+
         return redirect()->route('home');
     }
 }

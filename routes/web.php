@@ -21,7 +21,6 @@ use App\Http\Controllers\EbookController;
 | ROOT
 |--------------------------------------------------------------------------
 */
-
 Route::get('/', [\App\Http\Controllers\LandingController::class, 'index'])->name('home');
 
 /*
@@ -30,30 +29,46 @@ Route::get('/', [\App\Http\Controllers\LandingController::class, 'index'])->name
 |--------------------------------------------------------------------------
 */
 Route::controller(\App\Http\Controllers\LandingController::class)->group(function () {
+
     Route::get('/about', 'about')->name('landing.about');
+
     Route::get('/shop', 'products')->name('landing.products');
     Route::get('/shop/{product}', 'show')->name('landing.products.show');
+
     Route::get('/portfolio', 'albums')->name('landing.galleries');
     Route::get('/portfolio/{album}', 'albumGalleries')->name('landing.album.galleries');
     Route::get('/portfolio/{album}/{gallery}', 'galleryDetail')->name('landing.gallery.detail');
+
     Route::get('/artikel', 'articles')->name('landing.articles');
     Route::get('/artikel/{article}', 'showArticle')->name('landing.articles.show');
-    Route::post('/artikel/{article}/like', 'likeArticle')->middleware('auth')->name('landing.articles.like');
-    Route::post('/artikel/{article}/comment', 'commentArticle')->middleware('auth')->name('landing.articles.comment');
-    
-    // Legacy Redirect
-    Route::get('/blog', function() {
-        return redirect()->route('landing.articles');
-    });
+
+    Route::post('/artikel/{article}/like', 'likeArticle')
+        ->middleware('auth')
+        ->name('landing.articles.like');
+
+    Route::post('/artikel/{article}/comment', 'commentArticle')
+        ->middleware('auth')
+        ->name('landing.articles.comment');
+
+    Route::get('/blog', fn() => redirect()->route('landing.articles'));
+
     Route::get('/library', 'ebooks')->name('landing.ebooks');
     Route::get('/library/{ebook}', 'showEbook')->name('landing.ebooks.show');
-    Route::post('/library/{ebook}/download', 'downloadEbook')->middleware('auth')->name('landing.ebooks.download');
+
+    Route::post('/library/{ebook}/download', 'downloadEbook')
+        ->name('landing.ebooks.download');
+
+    Route::post('/library/{ebook}/send-otp', 'sendOtp')
+        ->name('landing.ebooks.send-otp');
+
+    Route::post('/library/{ebook}/verify-otp', 'verifyOtp')
+        ->name('landing.ebooks.verify-otp');
+
     Route::get('/contact', 'contact')->name('landing.contact');
 });
 
-Route::get('/login-redirect', function () {
-    return redirect()->route('login');
-})->name('login.redirect');
+Route::get('/login-redirect', fn() => redirect()->route('login'))
+    ->name('login.redirect');
 
 /*
 |--------------------------------------------------------------------------
@@ -69,23 +84,15 @@ require __DIR__ . '/auth.php';
 */
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/profile', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
-
-    Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])
-        ->name('profile.avatar.update');
-
-    Route::delete('/profile', [ProfileController::class, 'destroy'])
-        ->name('profile.destroy');
-
-    Route::post('/profile/send-username-verification', [ProfileController::class, 'sendUsernameVerification'])
-        ->name('profile.send-username-verification');
+    Route::post('/profile/send-username-verification',
+        [ProfileController::class, 'sendUsernameVerification']
+    )->name('profile.send-username-verification');
 });
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -148,33 +155,25 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
         'destroy' => 'superadmin.users.destroy',
     ]);
 
-    Route::delete(
-        '/superadmin/users/{id}/destroy-confirm',
+    Route::delete('/superadmin/users/{id}/destroy-confirm',
         [UserManagementController::class, 'destroyConfirm']
     )->name('superadmin.users.destroy.confirm');
 });
 
 /*
 |--------------------------------------------------------------------------
-| ALBUM ROUTES - PASTI BISA
-|--------------------------------------------------------------------------
-*/
-/*
-|--------------------------------------------------------------------------
-| ALBUM ROUTES - PASTI BISA
+| ALBUM ROUTES
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-    // Soft delete routes (MUST BE BEFORE RESOURCE)
+
     Route::get('/albums/trashed', [AlbumController::class, 'trashed'])->name('albums.trashed');
     Route::post('/albums/{id}/restore', [AlbumController::class, 'restore'])->name('albums.restore');
     Route::delete('/albums/{id}/force-delete', [AlbumController::class, 'forceDelete'])->name('albums.forceDelete');
 
-    // Photo routes
     Route::post('/albums/{album}/photos', [AlbumPhotoController::class, 'store'])->name('albums.photos.store');
     Route::delete('/photos/{photo}', [AlbumPhotoController::class, 'destroy'])->name('photos.destroy');
 
-    // Resource routes
     Route::resource('albums', AlbumController::class);
 });
 
@@ -184,14 +183,10 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-    Route::get('galleries/trashed', [GalleryController::class, 'trashed'])
-        ->name('galleries.trashed');
 
-    Route::post('galleries/{gallery}/restore', [GalleryController::class, 'restore'])
-        ->name('galleries.restore');
-
-    Route::delete('galleries/{gallery}/force-delete', [GalleryController::class, 'forceDelete'])
-        ->name('galleries.forceDelete');
+    Route::get('galleries/trashed', [GalleryController::class, 'trashed'])->name('galleries.trashed');
+    Route::post('galleries/{gallery}/restore', [GalleryController::class, 'restore'])->name('galleries.restore');
+    Route::delete('galleries/{gallery}/force-delete', [GalleryController::class, 'forceDelete'])->name('galleries.forceDelete');
 
     Route::resource('galleries', GalleryController::class);
 });
@@ -202,6 +197,7 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+
     Route::get('categories/trashed', [\App\Http\Controllers\CategoryController::class, 'trashed'])
         ->name('categories.trashed');
 
@@ -220,21 +216,17 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-    Route::get('ebooks/trashed', [EbookController::class, 'trashed'])
-        ->name('ebooks.trashed');
 
-    Route::post('ebooks/{id}/restore', [EbookController::class, 'restore'])
-        ->name('ebooks.restore');
-
-    Route::delete('ebooks/{id}/force-delete', [EbookController::class, 'forceDelete'])
-        ->name('ebooks.forceDelete');
+    Route::get('ebooks/trashed', [EbookController::class, 'trashed'])->name('ebooks.trashed');
+    Route::post('ebooks/{id}/restore', [EbookController::class, 'restore'])->name('ebooks.restore');
+    Route::delete('ebooks/{id}/force-delete', [EbookController::class, 'forceDelete'])->name('ebooks.forceDelete');
 
     Route::resource('ebooks', EbookController::class);
 });
 
 /*
 |--------------------------------------------------------------------------
-| REALTIME CHECK USERNAME & EMAIL (SUPERADMIN)
+| REALTIME CHECK (SUPERADMIN)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->post('/superadmin/check-username', function (Request $request) {
@@ -279,13 +271,13 @@ Route::delete('articles/{article}/force-delete', [ArticleController::class, 'for
 
 Route::resource('articles', ArticleController::class);
 
-
 /*
 |--------------------------------------------------------------------------
 | PRODUCTS ROUTES
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+
     Route::get('products/trashed', [\App\Http\Controllers\ProductController::class, 'trashed'])
         ->name('products.trashed');
 

@@ -66,8 +66,21 @@
                                 {{-- Overlay --}}
                                 <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition duration-300"></div>
                                 
+                                {{-- Access Badge --}}
+                                <div class="absolute top-4 left-4 z-20">
+                                    @if($ebook->is_auth_required)
+                                        <span class="bg-red-500/90 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
+                                            Member Only
+                                        </span>
+                                    @else
+                                        <span class="bg-[#d4a5a5]/90 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
+                                            Public
+                                        </span>
+                                    @endif
+                                </div>
+
                                 {{-- Download Badge --}}
-                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-sm text-xs text-gray-600 shadow-sm flex items-center gap-2">
+                                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-sm text-xs text-gray-600 shadow-sm flex items-center gap-2 z-20">
                                     <svg class="w-3 h-3 text-pink-luxury" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                     {{ number_format($ebook->total_download) }}
                                 </div>

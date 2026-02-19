@@ -78,14 +78,14 @@
     <script>
         function confirmForceDelete(id) {
             Swal.fire({
-                title: 'Delete Permanently?',
-                text: "You won't be able to revert this!",
+                title: 'Hapus Permanen?',
+                text: "Tindakan ini TIDAK DAPAT dibatalkan!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#f3f4f6',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
                 reverseButtons: true,
                 customClass: {
                     confirmButton: 'text-white px-4 py-2 rounded-lg',

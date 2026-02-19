@@ -2,8 +2,7 @@
     <!-- Card -->
     <div class="bg-white rounded-3xl shadow-xl border border-gray-100 px-8 py-10 relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#d4a5a5] to-[#c29595]"></div>
-        
-        <div class="text-center mb-8">
+                <div class="text-center mt-2">
             <h1 class="text-3xl font-bold luxury-gold-text" style="font-family: 'Playfair Display', serif;">
                 {{ __('Welcome Back') }}
             </h1>
@@ -77,6 +76,18 @@
                 {{ __('Sign In') }}
             </button>
             
+            <div class="relative flex py-2 items-center mt-6">
+                <div class="flex-grow border-t border-gray-200"></div>
+                <span class="flex-shrink-0 mx-4 text-gray-400 text-xs uppercase tracking-widest">Or Login With</span>
+                <div class="flex-grow border-t border-gray-200"></div>
+            </div>
+
+            <div class="flex justify-center mb-4">
+                <a href="{{ route('social.redirect', 'google') }}" class="flex items-center justify-center w-full px-4 py-3 border border-gray-200 rounded-full shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+                    <svg class="h-5 w-5 mr-2" aria-hidden="true" viewBox="0 0 24 24"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .533 5.333.533 12S5.867 24 12.48 24c3.44 0 6.04-1.133 8.16-3.293 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.133H12.48z" fill="#EA4335"/></svg>
+                    Google
+                </a>
+            </div>
             <div class="text-center mt-6">
                  <p class="text-sm text-gray-500">Don't have an account? <a href="{{ route('register') }}" class="text-[#c29595] hover:text-[#a87d7d] font-medium transition">Register here</a></p>
             </div>

@@ -28,6 +28,7 @@ class EbookController extends Controller
             'description' => 'nullable|string',
             'pdf' => 'required|mimes:pdf|max:10240',
             'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'is_auth_required' => 'nullable|boolean',
         ]);
 
         // Generate slug unik
@@ -51,6 +52,7 @@ class EbookController extends Controller
             'slug' => $finalSlug,
             'pdf' => $pdfPath,
             'cover' => $coverPath,
+            'is_auth_required' => $request->has('is_auth_required'),
         ]);
 
         return redirect()->route('ebooks.index')
@@ -73,6 +75,7 @@ class EbookController extends Controller
             'description' => 'nullable|string',
             'pdf' => 'nullable|mimes:pdf|max:10240',
             'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'is_auth_required' => 'nullable|boolean',
         ]);
 
         $slug = Str::slug($request->title);
@@ -85,6 +88,7 @@ class EbookController extends Controller
             'author' => $request->author,
             'description' => $request->description,
             'slug' => $count ? "{$slug}-{$count}" : $slug,
+            'is_auth_required' => $request->has('is_auth_required'),
         ];
 
         if ($request->hasFile('pdf')) {
@@ -138,7 +142,7 @@ class EbookController extends Controller
         $ebook = Ebook::onlyTrashed()->findOrFail($id);
         $ebook->restore();
 
-        return back()->with('success', 'Ebook restored successfully.');
+        return back()->with('success', 'E-book berhasil dipulihkan.');
     }
 
     public function forceDelete($id)
@@ -155,6 +159,6 @@ class EbookController extends Controller
 
         $ebook->forceDelete();
 
-        return back()->with('success', 'Ebook permanently deleted.');
+        return back()->with('success', 'E-book berhasil dihapus permanen.');
     }
 }

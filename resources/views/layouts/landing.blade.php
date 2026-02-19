@@ -89,13 +89,44 @@
                     <a href="{{ route('landing.ebooks') }}" class="nav-link text-sm uppercase tracking-wider text-gray-600 hover:text-gray-900 {{ request()->routeIs('landing.ebooks') ? 'text-pink-luxury' : '' }}">Ebooks</a>
                     
                     @auth
-                        @if(Auth::user()->hasRole('superadmin'))
-                            <a href="{{ route('dashboard.superadmin') }}" class="text-sm font-serif text-pink-luxury font-bold hover:text-gray-900 transition">Hi, {{ Auth::user()->name }}</a>
-                        @elseif(Auth::user()->hasRole('admin'))
-                            <a href="{{ route('dashboard.admin') }}" class="text-sm font-serif text-pink-luxury font-bold hover:text-gray-900 transition">Hi, {{ Auth::user()->name }}</a>
-                        @else
-                            <a href="{{ route('dashboard.user') }}" class="text-sm font-serif text-gray-500 hover:text-pink-luxury transition">Hi, {{ Auth::user()->name }}</a>
-                        @endif
+                        <!-- User Dropdown (Desktop) -->
+                        <div class="relative" x-data="{ userOpen: false }">
+                            <button @click="userOpen = !userOpen" @click.away="userOpen = false" class="flex items-center space-x-2 text-sm font-serif text-pink-luxury font-bold hover:text-gray-900 transition focus:outline-none">
+                                <span>Hi, {{ Auth::user()->name }}</span>
+                                <svg class="h-4 w-4 transition-transform duration-200" :class="{'rotate-180': userOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div x-show="userOpen" 
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl py-2 z-50 border border-gray-100"
+                                 style="display: none;">
+                                
+                                @if(Auth::user()->hasRole('superadmin'))
+                                    <a href="{{ route('dashboard.superadmin') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-luxury transition">Dashboard</a>
+                                @elseif(Auth::user()->hasRole('admin'))
+                                    <a href="{{ route('dashboard.admin') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-luxury transition">Dashboard</a>
+                                @endif
+
+                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-luxury transition">Profil</a>
+                                
+                                <div class="border-t border-gray-100 my-1"></div>
+                                
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition">
+                                        Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     @else
                         <a href="{{ route('login') }}" class="px-4 py-2 text-sm uppercase tracking-wider text-gray-900 hover:text-pink-luxury transition font-medium">Login</a>
                         @if (Route::has('register'))
@@ -126,13 +157,35 @@
                 <a href="{{ route('landing.articles') }}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-pink-luxury hover:bg-gray-50 rounded-md">Articles</a>
                 <a href="{{ route('landing.ebooks') }}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-pink-luxury hover:bg-gray-50 rounded-md">Ebooks</a>
                 @auth
-                     @if(Auth::user()->hasRole('superadmin'))
-                        <a href="{{ route('dashboard.superadmin') }}" class="block w-full text-center mt-4 px-5 py-3 text-base font-bold text-pink-luxury hover:bg-gray-50 rounded-md">Hi, {{ Auth::user()->name }}</a>
-                     @elseif(Auth::user()->hasRole('admin'))
-                        <a href="{{ route('dashboard.admin') }}" class="block w-full text-center mt-4 px-5 py-3 text-base font-bold text-pink-luxury hover:bg-gray-50 rounded-md">Hi, {{ Auth::user()->name }}</a>
-                     @else
-                        <a href="{{ route('dashboard.user') }}" class="block w-full text-center mt-4 px-5 py-3 text-base font-medium text-gray-500 hover:text-pink-luxury hover:bg-gray-50 rounded-md">Hi, {{ Auth::user()->name }}</a>
-                     @endif
+                    <!-- Mobile User Menu -->
+                    <div class="pt-4 pb-2 border-t border-gray-100 mt-4">
+                        <div class="flex items-center px-3">
+                            <div class="flex-shrink-0">
+                                <div class="h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-luxury font-bold font-serif">
+                                    {{ substr(Auth::user()->name, 0, 1) }}
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-base font-medium text-gray-800">{{ Auth::user()->name }}</div>
+                                <div class="text-sm font-medium text-gray-500">{{ Auth::user()->email }}</div>
+                            </div>
+                        </div>
+                        <div class="mt-3 space-y-1">
+                            @if(Auth::user()->hasRole('superadmin'))
+                                <a href="{{ route('dashboard.superadmin') }}" class="block px-3 py-2 text-base font-medium text-gray-600 hover:text-pink-luxury hover:bg-gray-50 rounded-md transition">Dashboard</a>
+                            @elseif(Auth::user()->hasRole('admin'))
+                                <a href="{{ route('dashboard.admin') }}" class="block px-3 py-2 text-base font-medium text-gray-600 hover:text-pink-luxury hover:bg-gray-50 rounded-md transition">Dashboard</a>
+                            @endif
+                            <a href="{{ route('profile.edit') }}" class="block px-3 py-2 text-base font-medium text-gray-600 hover:text-pink-luxury hover:bg-gray-50 rounded-md transition">Profil</a>
+                            
+                             <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-3 py-2 text-base font-medium text-red-500 hover:bg-red-50 rounded-md transition">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 @else
                     <a href="{{ route('login') }}" class="block w-full text-center mt-4 px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">Login</a>
                     @if (Route::has('register'))
@@ -189,12 +242,56 @@
 
     <!-- AOS Script -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         AOS.init({
             duration: 800,
             once: true,
             easing: 'ease-out-cubic',
         });
+
+        // Logout Confirmation
+        document.querySelectorAll('form[action="{{ route('logout') }}"]').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Anda akan keluar dari sesi ini.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d4a5a5',
+                    cancelButtonColor: '#f3f4f6',
+                    confirmButtonText: 'Ya, Logout!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        confirmButton: 'text-white px-6 py-2 rounded-full font-medium',
+                        cancelButton: 'text-gray-600 px-6 py-2 rounded-full hover:bg-gray-100 font-medium'
+                    },
+                    background: '#fff',
+                    color: '#555'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+                });
+            });
+        });
+
+        // Success Message
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#d4a5a5',
+                customClass: {
+                    confirmButton: 'px-6 py-2 rounded-full font-medium text-white'
+                }
+            });
+        @endif
     </script>
 </body>
 </html>

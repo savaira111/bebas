@@ -71,13 +71,13 @@ class AdminUserController extends Controller
             'role'     => 'user',
         ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
+        return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil dibuat.');
     }
 
     public function edit(User $user)
     {
         if (auth()->user()->role === 'admin' && $user->role !== 'user') {
-            return redirect()->route('admin.users.index')->with('error', 'View only for admin roles.');
+            return redirect()->route('admin.users.index')->with('error', 'Hanya dapat melihat peran admin.');
         }
 
         return view('admin.users.edit', compact('user'));
@@ -86,7 +86,7 @@ class AdminUserController extends Controller
     public function update(Request $request, User $user)
     {
         if (auth()->user()->role === 'admin' && $user->role !== 'user') {
-            return redirect()->route('admin.users.index')->with('error', 'Forbidden.');
+            return redirect()->route('admin.users.index')->with('error', 'Akses ditolak.');
         }
 
         $request->validate(
@@ -123,18 +123,18 @@ class AdminUserController extends Controller
         $user->save();
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User updated successfully.');
+            ->with('success', 'Pengguna berhasil diperbarui.');
     }
 
     public function destroy(User $user)
     {
         if (auth()->user()->role === 'admin' && $user->role !== 'user') {
-            return redirect()->route('admin.users.index')->with('error', 'Forbidden.');
+            return redirect()->route('admin.users.index')->with('error', 'Akses ditolak.');
         }
 
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('success', 'User deleted.');
+        return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil dihapus.');
     }
 
     // =================== TRASHED USERS ===================
@@ -156,12 +156,12 @@ class AdminUserController extends Controller
         $user = User::onlyTrashed()->findOrFail($id);
 
         if (auth()->user()->role === 'admin' && $user->role !== 'user') {
-            return redirect()->route('admin.users.trashed')->with('error', 'Forbidden.');
+            return redirect()->route('admin.users.trashed')->with('error', 'Akses ditolak.');
         }
 
         $user->restore();
 
-        return redirect()->route('admin.users.trashed')->with('success', 'User restored successfully.');
+        return redirect()->route('admin.users.trashed')->with('success', 'Pengguna berhasil dipulihkan.');
     }
 
     public function forceDelete($id)
@@ -169,11 +169,11 @@ class AdminUserController extends Controller
         $user = User::onlyTrashed()->findOrFail($id);
 
         if (auth()->user()->role === 'admin' && $user->role !== 'user') {
-            return redirect()->route('admin.users.trashed')->with('error', 'Forbidden.');
+            return redirect()->route('admin.users.trashed')->with('error', 'Akses ditolak.');
         }
 
         $user->forceDelete();
 
-        return redirect()->route('admin.users.trashed')->with('success', 'User permanently deleted.');
+        return redirect()->route('admin.users.trashed')->with('success', 'Pengguna berhasil dihapus permanen.');
     }
 }

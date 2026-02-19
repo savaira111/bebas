@@ -73,7 +73,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Current File</label>
                                 <div class="mt-2 text-sm text-gray-600 mb-4 bg-gray-50 p-2 rounded">
-                                    <a href="{{ asset('storage/' . $ebook->file) }}" target="_blank" class="text-red-400 hover:text-red-600 underline">View Current PDF</a>
+                                    <a href="{{ asset('storage/' . $ebook->pdf) }}" target="_blank" class="text-red-400 hover:text-red-600 underline">View Current PDF</a>
                                 </div>
 
                                 <label for="file" class="block text-sm font-medium text-gray-700">Change PDF File</label>
@@ -82,14 +82,26 @@
                                         <div class="flex text-sm text-gray-600 justify-center">
                                             <label for="file" class="relative cursor-pointer rounded-md bg-white font-medium text-red-400 focus-within:outline-none focus-within:ring-2 focus-within:ring-red-500 focus-within:ring-offset-2 hover:text-red-500">
                                                 <span>Upload PDF</span>
-                                                <input id="file" name="file" type="file" class="sr-only">
+                                                <input id="file" name="pdf" type="file" class="sr-only">
                                             </label>
                                         </div>
                                         <p class="text-xs text-gray-500">PDF only</p>
                                     </div>
                                 </div>
-                                @error('file') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                @error('pdf') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                             </div>
+                        </div>
+
+                        <!-- Login Required Toggle -->
+                        <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 flex items-center justify-between">
+                            <div class="space-y-1">
+                                <label class="text-gray-700 font-medium">Login Required for Download</label>
+                                <p class="text-xs text-gray-500">Users must be logged in to download this E-Book.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="is_auth_required" value="1" class="sr-only peer" {{ $ebook->is_auth_required ? 'checked' : '' }}>
+                                <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#d4a5a5]"></div>
+                            </label>
                         </div>
                     </div>
 

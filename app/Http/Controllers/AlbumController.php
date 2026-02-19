@@ -56,7 +56,7 @@ class AlbumController extends Controller
         $album->save();
 
         return redirect()->route('albums.index')
-            ->with('success', 'Album created successfully.');
+            ->with('success', 'Album berhasil dibuat.');
     }
 
     /**
@@ -104,7 +104,7 @@ class AlbumController extends Controller
         $album->save();
 
         return redirect()->route('albums.index')
-            ->with('success', 'Album updated successfully.');
+            ->with('success', 'Album berhasil diperbarui.');
     }
 
     /**
@@ -118,10 +118,10 @@ class AlbumController extends Controller
             $album->delete();
 
             return redirect()->route('albums.index')
-                ->with('success', 'Album "' . $albumName . '" moved to trash successfully.');
+                ->with('success', 'Album "' . $albumName . '" berhasil dipindahkan ke sampah.');
         } catch (\Exception $e) {
             return redirect()->route('albums.index')
-                ->with('error', 'Failed to delete album. Please try again.');
+                ->with('error', 'Gagal menghapus album. Silakan coba lagi.');
         }
     }
 
@@ -152,10 +152,10 @@ class AlbumController extends Controller
             $album->restore();
             
             return redirect()->route('albums.trashed')
-                ->with('success', 'Album "' . $albumName . '" restored successfully.');
+                ->with('success', 'Album "' . $albumName . '" berhasil dipulihkan.');
         } catch (\Exception $e) {
             return redirect()->route('albums.trashed')
-                ->with('error', 'Failed to restore album. Please try again.');
+                ->with('error', 'Gagal memulihkan album. Silakan coba lagi.');
         }
     }
 
@@ -182,10 +182,10 @@ class AlbumController extends Controller
             $album->forceDelete();
             
             return redirect()->route('albums.trashed')
-                ->with('success', 'Album "' . $albumName . '" permanently deleted.');
+                ->with('success', 'Album "' . $albumName . '" berhasil dihapus permanen.');
         } catch (\Exception $e) {
             return redirect()->route('albums.trashed')
-                ->with('error', 'Failed to delete album permanently. Please try again.');
+                ->with('error', 'Gagal menghapus album secara permanen. Silakan coba lagi.');
         }
     }
 }

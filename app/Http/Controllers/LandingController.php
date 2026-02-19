@@ -8,6 +8,9 @@ use App\Models\Album;
 use App\Models\Article;
 use App\Models\Ebook;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EbookDownloadOtp;
+use Illuminate\Support\Facades\Session;
 
 class LandingController extends Controller
 {
@@ -174,33 +177,75 @@ class LandingController extends Controller
         return view('landing.ebook-detail', compact('ebook'));
     }
 
-    public function downloadEbook(Request $request, Ebook $ebook)
+    public function sendOtp(Request $request, Ebook $ebook)
     {
-        // 1. Validate Captcha
         $request->validate([
-            'captcha' => 'required|captcha'
-        ], [
-            'captcha.captcha' => 'Kode captcha salah, silakan coba lagi.'
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
         ]);
 
-        // 2. Increment Download Count
+        $otp = sprintf("%06d", mt_rand(1, 999999));
+        
+        Session::put('ebook_otp_' . $ebook->id, [
+            'otp' => $otp,
+            'name' => $request->name,
+            'email' => $request->email,
+            'expires_at' => now()->addMinutes(10),
+        ]);
+
+        try {
+            Mail::to($request->email)->send(new EbookDownloadOtp($otp, $request->name, $ebook->title));
+            return response()->json(['success' => true, 'message' => 'OTP sent successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to send OTP. Please check your email configuration.'], 500);
+        }
+    }
+
+    public function verifyOtp(Request $request, Ebook $ebook)
+    {
+        $request->validate([
+            'otp' => 'required|string|size:6',
+        ]);
+
+        $sessionData = Session::get('ebook_otp_' . $ebook->id);
+
+        if (!$sessionData || $sessionData['otp'] !== $request->otp || now()->greaterThan($sessionData['expires_at'])) {
+            return response()->json(['success' => false, 'message' => 'Invalid or expired OTP.'], 422);
+        }
+
+        Session::put('ebook_verified_' . $ebook->id, true);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function downloadEbook(Request $request, Ebook $ebook)
+    {
+        // 1. Check if auth is required
+        if ($ebook->is_auth_required && !auth()->check()) {
+            return back()->with('error', 'Silakan login terlebih dahulu untuk mengunduh e-book ini.');
+        }
+
+        // 2. If guest and public, check OTP verification
+        if (!auth()->check() && !Session::get('ebook_verified_' . $ebook->id)) {
+             return back()->with('error', 'Silakan verifikasi OTP terlebih dahulu.');
+        }
+
+        // 3. Increment Download Count
         $ebook->increment('total_download');
 
-        // 3. Serve File Check
-        // Assuming 'pdf' stores the filename in 'storage/app/public/ebooks' or similar
-        // Adjust path based on your storage configuration.
-        // If it's a full URL, we might need a different approach, but usually it's a relative path.
-        // Let's assume standard storage link.
-        
+        // 4. Serve File Check
         $filePath = public_path('storage/' . $ebook->pdf);
         
         if (!file_exists($filePath)) {
-            // Fallback check if path is stored differently (e.g. without 'storage/')
             $filePath = public_path($ebook->pdf);
              if (!file_exists($filePath)) {
                 abort(404, 'File ebook tidak ditemukan.');
              }
         }
+
+        // Clear verification session after download start
+        Session::forget('ebook_verified_' . $ebook->id);
+        Session::forget('ebook_otp_' . $ebook->id);
 
         return response()->download($filePath);
     }

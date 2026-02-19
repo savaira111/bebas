@@ -79,6 +79,18 @@
                                 @error('pdf') <span class="text-red-500 text-xs mt-2 block text-center">{{ $message }}</span> @enderror
                             </div>
                         </div>
+                        
+                        <!-- Login Required Toggle -->
+                        <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 flex items-center justify-between">
+                            <div class="space-y-1">
+                                <label class="text-gray-700 font-medium font-serif">Login Required for Download</label>
+                                <p class="text-xs text-gray-500">If enabled, users must be logged in to download this E-Book.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="is_auth_required" value="1" class="sr-only peer" checked>
+                                <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#d4a5a5]"></div>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="mt-10 flex items-center justify-end space-x-4 border-t border-gray-50 pt-8">

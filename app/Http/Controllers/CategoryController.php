@@ -33,11 +33,11 @@ class CategoryController extends Controller
 
         if ($request->has('create_another')) {
             return redirect()->route('categories.create')
-                ->with('success', 'Category created successfully. You can create another one.');
+                ->with('success', 'Kategori berhasil dibuat. Anda dapat membuat kategori lainnya.');
         }
 
         return redirect()->route('categories.index')
-            ->with('success', 'Category created successfully!');
+            ->with('success', 'Kategori berhasil dibuat!');
     }
 
     // Form edit kategori

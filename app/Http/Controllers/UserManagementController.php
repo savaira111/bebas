@@ -38,7 +38,7 @@ class UserManagementController extends Controller
     public function store(Request $request)
     {
         if (auth()->user()->role === 'admin' && $request->role !== 'user') {
-            return redirect()->back()->with('error', 'Admins can only create regular users.');
+            return redirect()->back()->with('error', 'Admin hanya dapat membuat pengguna biasa.');
         }
 
         $validated = $request->validate([
@@ -79,7 +79,7 @@ class UserManagementController extends Controller
     {
         if (auth()->user()->role === 'admin' && $user->role !== 'user') {
             return redirect()->route('superadmin.users.index')
-                             ->with('error', 'Admins can only edit regular users.');
+                             ->with('error', 'Admin hanya dapat mengedit pengguna biasa.');
         }
 
         return view('superadmin.users.edit', compact('user'));
@@ -89,7 +89,7 @@ class UserManagementController extends Controller
     {
         if (auth()->user()->role === 'admin' && $user->role !== 'user') {
             return redirect()->route('superadmin.users.index')
-                             ->with('error', 'Admins can only update regular users.');
+                             ->with('error', 'Admin hanya dapat memperbarui pengguna biasa.');
         }
 
         $request->validate([
@@ -140,14 +140,14 @@ class UserManagementController extends Controller
     {
         if (auth()->user()->role === 'admin' && $user->role !== 'user') {
             return redirect()->route('superadmin.users.index')
-                             ->with('error', 'Admins can only delete regular users.');
+                             ->with('error', 'Admin hanya dapat menghapus pengguna biasa.');
         }
 
         $user->delete();
 
         return redirect()
             ->route('superadmin.users.index')
-            ->with('success', 'User moved to trash.');
+            ->with('success', 'Pengguna dipindahkan ke sampah.');
     }
 
     public function trashed(Request $request)

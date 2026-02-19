@@ -120,11 +120,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function confirmAction(button, action) {
-            const title = action === 'delete' ? 'Delete Permanently?' : 'Restore Item?';
-            const text = action === 'delete' ? 'This action CANNOT be undone.' : 'The item will be restored.';
+            const title = action === 'delete' ? 'Hapus Permanen?' : 'Pulihkan Item?';
+            const text = action === 'delete' ? 'Tindakan ini TIDAK DAPAT dibatalkan.' : 'Item akan dipulihkan ke daftar aktif.';
             const method = action === 'delete' ? 'DELETE' : 'POST';
             const confirmBtnColor = action === 'delete' ? '#ef4444' : '#bfa05f';
-            const confirmBtnText = action === 'delete' ? 'Yes, delete forever!' : 'Yes, restore!';
+            const confirmBtnText = action === 'delete' ? 'Ya, hapus selamanya!' : 'Ya, pulihkan!';
 
             Swal.fire({
                 title: title,
@@ -134,7 +134,7 @@
                 confirmButtonColor: confirmBtnColor,
                 cancelButtonColor: '#f3f4f6',
                 confirmButtonText: confirmBtnText,
-                cancelButtonText: 'Cancel',
+                cancelButtonText: 'Batal',
                 reverseButtons: true,
                 customClass: {
                     confirmButton: 'text-white px-4 py-2 rounded-lg',

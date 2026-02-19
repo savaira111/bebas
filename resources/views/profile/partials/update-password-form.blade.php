@@ -1,6 +1,6 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900" style="font-family: 'Playfair Display', serif;">
+        <h2 class="text-lg font-medium text-gray-900 font-serif">
             {{ __('Update Password') }}
         </h2>
 
@@ -13,61 +13,195 @@
         @csrf
         @method('put')
 
-        <div class="space-y-6">
-            <!-- Current Password -->
-            <div>
-                <x-input-label for="update_password_current_password" :value="__('Current Password')" class="text-gray-700" />
-                <x-text-input id="update_password_current_password" name="current_password" type="password" 
-                    class="mt-1 block w-full rounded-2xl border-gray-200 bg-gray-50 focus:border-red-200 focus:ring focus:ring-red-100 transition shadow-sm py-3 px-4" 
+        <!-- Current Password -->
+        <div>
+            <x-input-label for="current_password" :value="__('Current Password')" />
+            <div class="relative">
+                <x-text-input id="current_password" name="current_password" type="password"
+                    class="mt-1 block w-full pr-12"
                     autocomplete="current-password" />
-                <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
+                <button type="button"
+                        onclick="togglePassword('current_password', this)"
+                        class="absolute right-3 top-3 text-gray-400">
+                    👁
+                </button>
+            </div>
+            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
+        </div>
+
+        <!-- New Password -->
+        <div>
+            <x-input-label for="password" :value="__('New Password')" />
+            <div class="relative">
+                <x-text-input id="password" name="password" type="password"
+                    class="mt-1 block w-full pr-12"
+                    autocomplete="new-password" />
+                <button type="button"
+                        onclick="togglePassword('password', this)"
+                        class="absolute right-3 top-3 text-gray-400">
+                    👁
+                </button>
             </div>
 
-            <!-- New Password -->
-            <div x-data="{ show: false }" class="relative">
-                <x-input-label for="update_password_password" :value="__('New Password')" class="text-gray-700" />
-                <div class="relative">
-                     <x-text-input id="update_password_password" name="password" x-bind:type="show ? 'text' : 'password'" 
-                        class="mt-1 block w-full rounded-2xl border-gray-200 bg-gray-50 focus:border-red-200 focus:ring focus:ring-red-100 transition shadow-sm py-3 px-4 pr-10" 
-                        autocomplete="new-password" />
-                    <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-3 flex items-center pt-2 text-gray-400 hover:text-gray-600 focus:outline-none">
-                        <svg class="h-5 w-5" :class="{'hidden': !show, 'block': show}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                        <svg class="h-5 w-5" :class="{'block': !show, 'hidden': show}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 011.575-3.107m7.065 7.065L2 12m17.518-2.518A10.05 10.05 0 0121.542 12c-1.274 4.057-5.064 7-9.542 7a10.05 10.05 0 01-3.107-1.575m0 0L3 3l18 18" /></svg>
-                    </button>
-                </div>
-                <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+
+            <!-- Strength Bars -->
+            <div class="flex gap-2 mt-3">
+                <div class="h-2 w-1/5 bg-gray-300 rounded" id="bar-length"></div>
+                <div class="h-2 w-1/5 bg-gray-300 rounded" id="bar-uppercase"></div>
+                <div class="h-2 w-1/5 bg-gray-300 rounded" id="bar-lowercase"></div>
+                <div class="h-2 w-1/5 bg-gray-300 rounded" id="bar-number"></div>
+                <div class="h-2 w-1/5 bg-gray-300 rounded" id="bar-symbol"></div>
             </div>
 
-            <!-- Confirm Password -->
-             <div x-data="{ show: false }" class="relative">
-                <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" class="text-gray-700" />
-                <div class="relative">
-                     <x-text-input id="update_password_password_confirmation" name="password_confirmation" x-bind:type="show ? 'text' : 'password'" 
-                        class="mt-1 block w-full rounded-2xl border-gray-200 bg-gray-50 focus:border-red-200 focus:ring focus:ring-red-100 transition shadow-sm py-3 px-4 pr-10" 
-                        autocomplete="new-password" />
-                     <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-3 flex items-center pt-2 text-gray-400 hover:text-gray-600 focus:outline-none">
-                        <svg class="h-5 w-5" :class="{'hidden': !show, 'block': show}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                        <svg class="h-5 w-5" :class="{'block': !show, 'hidden': show}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 011.575-3.107m7.065 7.065L2 12m17.518-2.518A10.05 10.05 0 0121.542 12c-1.274 4.057-5.064 7-9.542 7a10.05 10.05 0 01-3.107-1.575m0 0L3 3l18 18" /></svg>
-                    </button>
-                </div>
-                <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+            <!-- Rules -->
+            <ul class="mt-2 text-xs space-y-1">
+                <li data-rule="length" class="text-red-500 hidden">• Minimal 8 karakter</li>
+                <li data-rule="uppercase" class="text-red-500 hidden">• Huruf besar</li>
+                <li data-rule="lowercase" class="text-red-500 hidden">• Huruf kecil</li>
+                <li data-rule="number" class="text-red-500 hidden">• Angka</li>
+                <li data-rule="symbol" class="text-red-500 hidden">• Simbol</li>
+            </ul>
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+            <div class="relative">
+                <x-text-input id="password_confirmation" name="password_confirmation" type="password"
+                    class="mt-1 block w-full pr-12"
+                    autocomplete="new-password" />
+                <button type="button"
+                        onclick="togglePassword('password_confirmation', this)"
+                        class="absolute right-3 top-3 text-gray-400">
+                    👁
+                </button>
+
+                <div class="absolute right-10 top-3 text-lg hidden" id="confirmIcon"></div>
             </div>
+
+            <small id="confirmError" class="text-red-500 hidden text-sm mt-1 block">
+                Password tidak sama
+            </small>
+
+            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
         </div>
 
         <div class="flex items-center gap-4">
-             <button type="submit" class="px-6 py-2 rounded-full text-white text-sm font-medium shadow-md hover:shadow-lg transform transition hover:-translate-y-0.5" style="background: linear-gradient(135deg, #d4a5a5 0%, #c29595 100%);">
+            <x-primary-button id="submitBtn" disabled>
                 {{ __('Save') }}
-            </button>
+            </x-primary-button>
 
             @if (session('status') === 'password-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-green-600 font-medium"
-                >{{ __('Saved.') }}</p>
+                <p x-data="{ show: true }"
+                   x-show="show"
+                   x-transition
+                   x-init="setTimeout(() => show = false, 2000)"
+                   class="text-sm text-gray-600">
+                    {{ __('Saved.') }}
+                </p>
             @endif
         </div>
     </form>
 </section>
+
+<script>
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'password' ? '👁' : '🙈';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const password = document.getElementById('password');
+    const confirm = document.getElementById('password_confirmation');
+    const submitBtn = document.getElementById('submitBtn');
+    const confirmError = document.getElementById('confirmError');
+    const confirmIcon = document.getElementById('confirmIcon');
+
+    const bars = {
+        length: document.getElementById('bar-length'),
+        uppercase: document.getElementById('bar-uppercase'),
+        lowercase: document.getElementById('bar-lowercase'),
+        number: document.getElementById('bar-number'),
+        symbol: document.getElementById('bar-symbol'),
+    };
+
+    const rules = {
+        length: document.querySelector('[data-rule="length"]'),
+        uppercase: document.querySelector('[data-rule="uppercase"]'),
+        lowercase: document.querySelector('[data-rule="lowercase"]'),
+        number: document.querySelector('[data-rule="number"]'),
+        symbol: document.querySelector('[data-rule="symbol"]'),
+    };
+
+    function checkRule(cond, bar, rule) {
+        if (cond) {
+            bar.style.background = 'lightgreen';
+            rule.classList.add('hidden');
+        } else {
+            bar.style.background = '#D1D5DB';
+            rule.classList.remove('hidden');
+        }
+    }
+
+    function validatePassword() {
+        const v = password.value;
+
+        if (!v) {
+            Object.values(bars).forEach(b => b.style.background = '#D1D5DB');
+            Object.values(rules).forEach(r => r.classList.add('hidden'));
+            return false;
+        }
+
+        Object.values(rules).forEach(r => r.classList.remove('hidden'));
+
+        checkRule(v.length >= 8, bars.length, rules.length);
+        checkRule(/[A-Z]/.test(v), bars.uppercase, rules.uppercase);
+        checkRule(/[a-z]/.test(v), bars.lowercase, rules.lowercase);
+        checkRule(/[0-9]/.test(v), bars.number, rules.number);
+        checkRule(/[^A-Za-z0-9]/.test(v), bars.symbol, rules.symbol);
+
+        return Object.values(bars).every(b => b.style.background === 'lightgreen');
+    }
+
+    function validateConfirm() {
+        if (!confirm.value) {
+            confirmError.classList.add('hidden');
+            confirmIcon.classList.add('hidden');
+            return false;
+        }
+
+        confirmIcon.classList.remove('hidden');
+
+        if (confirm.value === password.value) {
+            confirmError.classList.add('hidden');
+            confirmIcon.textContent = '✔';
+            confirmIcon.className = 'absolute right-10 top-3 text-green-600 text-lg';
+            return true;
+        } else {
+            confirmError.classList.remove('hidden');
+            confirmIcon.textContent = '✖';
+            confirmIcon.className = 'absolute right-10 top-3 text-red-600 text-lg';
+            return false;
+        }
+    }
+
+    function updateSubmit() {
+        submitBtn.disabled = !(validatePassword() && validateConfirm());
+    }
+
+    password.addEventListener('input', () => {
+        validatePassword();
+        validateConfirm();
+        updateSubmit();
+    });
+
+    confirm.addEventListener('input', () => {
+        validateConfirm();
+        updateSubmit();
+    });
+
+});
+</script>

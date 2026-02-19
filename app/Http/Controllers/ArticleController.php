@@ -49,7 +49,7 @@ class ArticleController extends Controller
 
         Article::create($data);
 
-        return redirect()->route('articles.index')->with('success', 'Article saved as draft successfully.');
+        return redirect()->route('articles.index')->with('success', 'Artikel berhasil disimpan sebagai draf.');
     }
 
     public function edit(Article $article)
@@ -85,13 +85,13 @@ class ArticleController extends Controller
 
         $article->update($data);
 
-        return redirect()->route('articles.index')->with('success', 'Article updated successfully.');
+        return redirect()->route('articles.index')->with('success', 'Artikel berhasil diperbarui.');
     }
 
     public function destroy(Article $article)
     {
         $article->delete();
-        return back()->with('success', 'Article moved to Trash');
+        return back()->with('success', 'Artikel berhasil dipindahkan ke sampah');
     }
 
     public function restore($id)
@@ -100,7 +100,7 @@ class ArticleController extends Controller
             ->findOrFail($id)
             ->restore();
 
-        return back()->with('success', 'Article restored successfully');
+        return back()->with('success', 'Artikel berhasil dipulihkan');
     }
 
     public function forceDelete($id)
@@ -109,7 +109,7 @@ class ArticleController extends Controller
             ->findOrFail($id)
             ->forceDelete();
 
-        return back()->with('success', 'Article permanently deleted');
+        return back()->with('success', 'Artikel berhasil dihapus permanen');
     }
 
     public function publish($id)
@@ -121,6 +121,6 @@ class ArticleController extends Controller
             'published_at' => now(),
         ]);
 
-        return redirect()->route('articles.index')->with('success', 'Article published successfully!');
+        return redirect()->route('articles.index')->with('success', 'Artikel berhasil diterbitkan!');
     }
 }

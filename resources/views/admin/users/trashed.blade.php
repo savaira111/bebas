@@ -80,14 +80,14 @@
     <script>
         function confirmRestore(id) {
             Swal.fire({
-                title: 'Restore User?',
-                text: "The user will be restored and active again.",
+                title: 'Pulihkan Pengguna?',
+                text: "Pengguna akan dipulihkan dan menjadi aktif kembali.",
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#bfa05f',
                 cancelButtonColor: '#f3f4f6',
-                confirmButtonText: 'Yes, restore!',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Ya, pulihkan!',
+                cancelButtonText: 'Batal',
                 reverseButtons: true,
                 customClass: {
                     confirmButton: 'text-white px-4 py-2 rounded-lg',
@@ -104,14 +104,14 @@
 
         function confirmForceDelete(id) {
              Swal.fire({
-                title: 'Delete Permanently?',
-                text: "This action CANNOT be undone. User data will be lost forever.",
+                title: 'Hapus Permanen?',
+                text: "Tindakan ini TIDAK DAPAT dibatalkan. Data pengguna akan hilang selamanya.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#f3f4f6',
-                confirmButtonText: 'Yes, delete forever!',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: 'Ya, hapus selamanya!',
+                cancelButtonText: 'Batal',
                 reverseButtons: true,
                  customClass: {
                     confirmButton: 'text-white px-4 py-2 rounded-lg',

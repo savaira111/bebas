@@ -103,14 +103,14 @@
     <script>
         function confirmDelete(id) {
             Swal.fire({
-                title: 'Are you sure?',
-                text: "The image will be removed from gallery.",
+                title: 'Apakah Anda yakin?',
+                text: "Gambar akan dipindahkan ke sampah.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d4a5a5',
                 cancelButtonColor: '#f3f4f6',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'No',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
                 reverseButtons: true,
                 customClass: {
                     confirmButton: 'text-white px-4 py-2 rounded-lg',

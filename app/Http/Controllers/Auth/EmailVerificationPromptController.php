@@ -28,7 +28,7 @@ class EmailVerificationPromptController extends Controller
             } elseif ($user->role === 'superadmin') {
                 return redirect()->route('dashboard.superadmin');
             } else {
-                return redirect()->route('dashboard.user');
+                return redirect()->route('home');
             }
         }
 

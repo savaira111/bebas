@@ -81,15 +81,14 @@
                                             </svg>
                                         </a>
 
-                                        <!-- DELETE BUTTON - PASTI BISA DI KLIK -->
-                                        <a href="#" 
-                                           onclick="event.preventDefault(); if(confirm('Move album \"{{ $album->name }}\" to trash?')) { document.getElementById('delete-form-{{ $album->id }}').submit(); }"
+                                        <!-- DELETE BUTTON -->
+                                        <button onclick="confirmDelete({{ $album->id }})" 
                                            class="text-gray-400 hover:text-red-600 transition"
                                            title="Delete">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
-                                        </a>
+                                        </button>
 
                                         <!-- DELETE FORM -->
                                         <form id="delete-form-{{ $album->id }}" 
@@ -118,4 +117,37 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Album akan dipindahkan ke sampah.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d4a5a5',
+                cancelButtonColor: '#f3f4f6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'text-white px-4 py-2 rounded-lg',
+                    cancelButton: 'text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100'
+                },
+                background: '#fff',
+                color: '#555'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + id).submit();
+                }
+            })
+        }
+    </script>
+    <style>
+        .swal2-title { font-family: 'Playfair Display', serif !important; }
+        .swal2-popup { border-radius: 20px !important; }
+    </style>
+    @endpush
 </x-app-layout>

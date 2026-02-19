@@ -50,10 +50,10 @@ class ProductController extends Controller
         Product::create($data);
 
         if ($request->has('create_another')) {
-            return redirect()->route('products.create')->with('success', 'Product created successfully.');
+            return redirect()->route('products.create')->with('success', 'Produk berhasil dibuat.');
         }
 
-        return redirect()->route('products.index')->with('success', 'Product created successfully.');
+        return redirect()->route('products.index')->with('success', 'Produk berhasil dibuat.');
     }
 
     /**
@@ -82,7 +82,7 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        return redirect()->route('products.index')->with('success', 'Product updated successfully.');
+        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
     /**
@@ -92,7 +92,7 @@ class ProductController extends Controller
     {
         $product->delete(); // Soft delete
 
-        return redirect()->route('products.index')->with('success', 'Product moved to trash.');
+        return redirect()->route('products.index')->with('success', 'Produk berhasil dipindahkan ke sampah.');
     }
 
     public function trashed()
@@ -104,7 +104,7 @@ class ProductController extends Controller
     public function restore($id)
     {
         Product::onlyTrashed()->findOrFail($id)->restore();
-        return back()->with('success', 'Product restored successfully.');
+        return back()->with('success', 'Produk berhasil dipulihkan.');
     }
 
     public function forceDelete($id)
@@ -116,6 +116,6 @@ class ProductController extends Controller
         }
         
         $product->forceDelete();
-        return back()->with('success', 'Product permanently deleted.');
+        return back()->with('success', 'Produk berhasil dihapus permanen.');
     }
 }
