@@ -296,6 +296,8 @@
                 }
             });
         @endif
-    </script>
+
+        </script>
+        @stack('scripts')
 </body>
 </html>
