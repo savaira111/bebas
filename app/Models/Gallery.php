@@ -15,6 +15,8 @@ class Gallery extends Model
         'album_id',
         'category_id',
         'image',
+        'video_url',
+        'type',
     ];
 
     protected $casts = [

@@ -10,7 +10,7 @@ class AlbumPhoto extends Model
 {
     use softDeletes;
 
-    protected $fillable = ['gallery_id', 'image', 'caption'];
+    protected $fillable = ['album_id', 'image', 'caption'];
 
     public function gallery()
     {

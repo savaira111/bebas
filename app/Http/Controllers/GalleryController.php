@@ -33,45 +33,43 @@ class GalleryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'album_id' => 'nullable|exists:albums,id',
-            'description' => 'nullable|string',
-            'image' => 'required|file|mimes:jpg,jpeg,png,mp4|max:10240',
+            'global_title' => 'required|string|max:255',
+            'global_description' => 'nullable|string',
+            'items' => 'required|array|max:10',
+            'items.*.type' => 'required|in:foto,video',
+            'items.*.description' => 'nullable|string',
+            'items.*.image' => 'nullable|file|mimes:jpg,jpeg,png,mp4,mov,avi,mkv,webm|max:10240',
+            'items.*.video_url' => 'nullable|string|max:255',
         ]);
 
-        $type = 'foto';
+        foreach ($request->items as $item) {
+            $path = null;
+            if (isset($item['image'])) {
+                $path = $item['image']->store('galleries', 'public');
+            }
 
-        $path = null;
-
-        if ($request->hasFile('image')) {
-
-            // FIX ERROR ARRAY
-            Gallery::validateFiles([$request->file('image')], $type);
-
-            $path = $request->file('image')->store('galleries', 'public');
-        }
-
-        // FIX ERROR SQL (WAJIB ISI IMAGE)
-        $gallery = Gallery::create([
-            'title' => $request->title,
-            'category_id' => $request->category_id,
-            'album_id' => $request->album_id,
-            'description' => $request->description,
-            'image' => $path, // WAJIB ADA
-        ]);
-
-        // Optional kalau mau tetap simpan ke photos juga
-        if ($path && $request->album_id) {
-            $gallery->photos()->create([
-                'image' => $path,
+            $gallery = Gallery::create([
+                'title' => $request->global_title,
+                'category_id' => $request->category_id,
                 'album_id' => $request->album_id,
+                'description' => $item['description'] ?? $request->global_description,
+                'image' => $path,
+                'video_url' => $item['video_url'] ?? null,
+                'type' => $item['type'],
             ]);
+
+            if ($path && $request->album_id) {
+                $gallery->photos()->create([
+                    'image' => $path,
+                    'album_id' => $request->album_id,
+                ]);
+            }
         }
 
         return redirect()
             ->route('galleries.index')
-            ->with('success', 'Gallery berhasil ditambahkan');
+            ->with('success', 'Berhasil menambahkan ' . count($request->items) . ' gallery baru');
     }
 
     public function show(Gallery $gallery)
@@ -94,34 +92,33 @@ class GalleryController extends Controller
             'category_id' => 'required|exists:categories,id',
             'album_id' => 'nullable|exists:albums,id',
             'description' => 'nullable|string',
-            'image' => 'nullable|file|mimes:jpg,jpeg,png,mp4|max:10240',
+            'type' => 'required|in:foto,video',
+            'image' => 'nullable|file|mimes:jpg,jpeg,png,mp4,mov,avi,mkv,webm|max:10240',
+            'video_url' => 'nullable|string|max:255',
         ]);
 
-        $type = 'foto';
-
-        $gallery->update([
+        $data = [
             'title' => $request->title,
             'category_id' => $request->category_id,
             'album_id' => $request->album_id,
             'description' => $request->description,
-        ]);
+            'type' => $request->type,
+            'video_url' => $request->video_url,
+        ];
 
-        if ($request->hasFile('image') && $request->album_id) {
-
-            Gallery::validateFiles([$request->file('image')], $type);
-
+        if ($request->hasFile('image')) {
             $path = $request->file('image')->store('galleries', 'public');
+            $data['image'] = $path;
 
-            // update kolom image di galleries
-            $gallery->update([
-                'image' => $path,
-            ]);
-
-            $gallery->photos()->create([
-                'image' => $path,
-                'album_id' => $request->album_id,
-            ]);
+            if ($request->album_id) {
+                $gallery->photos()->create([
+                    'image' => $path,
+                    'album_id' => $request->album_id,
+                ]);
+            }
         }
+
+        $gallery->update($data);
 
         return redirect()
             ->route('galleries.index')

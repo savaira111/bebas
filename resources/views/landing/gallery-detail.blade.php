@@ -24,16 +24,38 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
-                {{-- Image Column --}}
+                {{-- Media Column --}}
                 <div data-aos="fade-right">
-                    <div class="overflow-hidden rounded-2xl shadow-xl">
-                        @if($gallery->image)
+                    <div class="overflow-hidden rounded-2xl shadow-xl bg-black aspect-video flex items-center justify-center">
+                        @if($gallery->type === 'video')
+                            @if($gallery->video_url)
+                                @php
+                                    $videoId = '';
+                                    if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $gallery->video_url, $matches)) {
+                                        $videoId = $matches[1];
+                                    }
+                                @endphp
+                                @if($videoId)
+                                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ $videoId }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                @else
+                                    <div class="text-white text-center p-4">
+                                        <p class="mb-2">Invalid YouTube URL</p>
+                                        <a href="{{ $gallery->video_url }}" target="_blank" class="text-pink-300 underline">{{ $gallery->video_url }}</a>
+                                    </div>
+                                @endif
+                            @elseif($gallery->image)
+                                <video class="w-full h-full object-contain" controls>
+                                    <source src="{{ Storage::url($gallery->image) }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            @endif
+                        @elseif($gallery->image)
                             <img src="{{ Storage::url($gallery->image) }}"
                                  alt="{{ $gallery->title }}"
                                  class="w-full h-auto object-cover transition-transform duration-700 hover:scale-105"
                                  loading="lazy">
                         @else
-                            <div class="aspect-[4/3] flex items-center justify-center"
+                            <div class="aspect-[4/3] flex items-center justify-center w-full"
                                  style="background: linear-gradient(135deg, #fceeee 0%, #f9f5eb 100%);">
                                 <svg class="w-20 h-20 text-pink-luxury/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -92,14 +114,6 @@
 
                         {{-- Action Buttons --}}
                         <div class="flex flex-wrap gap-3">
-                            <a href="{{ route('landing.album.galleries', $album) }}"
-                               class="inline-flex items-center px-6 py-3 rounded-full text-sm font-medium uppercase tracking-wider transition-all duration-300 hover:-translate-y-0.5 shadow-md hover:shadow-lg"
-                               style="background-color: #d4a5a5; color: white;">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                                </svg>
-                                Back to Galleries
-                            </a>
                             <a href="{{ route('landing.galleries') }}"
                                class="inline-flex items-center px-6 py-3 rounded-full text-sm font-medium uppercase tracking-wider border transition-all duration-300 hover:-translate-y-0.5"
                                style="border-color: #d4a5a5; color: #d4a5a5;">

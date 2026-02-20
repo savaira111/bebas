@@ -102,32 +102,26 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function buyNow(qty) {
-            @auth
-                // User is logged in -> Redirect to checkout (UI Logic)
-                window.location.href = "{{ url('/checkout') }}/{{ $product->id }}?qty=" + qty;
-            @else
-                // User is Guest -> Show Login Popup
-                Swal.fire({
-                    title: 'Login Required',
-                    text: "Please login to proceed with your purchase.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d4a5a5',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Login',
-                    cancelButtonText: 'Cancel',
-                    customClass: {
-                        popup: 'font-sans rounded-2xl',
-                        title: 'font-serif text-gray-800',
-                        confirmButton: 'rounded-full px-6',
-                        cancelButton: 'rounded-full px-6'
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "{{ route('login') }}";
-                    }
-                })
-            @endauth
+            Swal.fire({
+                title: 'Informasi Pemesanan',
+                text: "Pemesanan produk dilakukan melalui DM Instagram kami.",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#d4a5a5',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Lanjut ke Instagram',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'font-sans rounded-2xl',
+                    title: 'font-serif text-gray-800',
+                    confirmButton: 'rounded-full px-6',
+                    cancelButton: 'rounded-full px-6'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.open("https://www.instagram.com/luxbe512?igsh=ajljbjdrZHQzbWt3", "_blank");
+                }
+            })
         }
     </script>
 @endsection

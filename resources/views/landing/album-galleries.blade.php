@@ -38,9 +38,39 @@
                        data-aos="fade-up"
                        data-aos-delay="{{ ($loop->index % 3) * 100 }}">
                         <div class="relative overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition-all duration-500">
-                            {{-- Image --}}
-                            <div class="aspect-[4/3] overflow-hidden">
-                                @if($gallery->image)
+                            {{-- Media --}}
+                            <div class="aspect-[4/3] overflow-hidden relative">
+                                @if($gallery->type === 'video')
+                                    @if($gallery->video_url)
+                                        {{-- YouTube Thumbnail --}}
+                                        @php
+                                            $videoId = '';
+                                            if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $gallery->video_url, $matches)) {
+                                                $videoId = $matches[1];
+                                            }
+                                        @endphp
+                                        @if($videoId)
+                                            <img src="https://img.youtube.com/vi/{{ $videoId }}/mqdefault.jpg"
+                                                 alt="{{ $gallery->title }}"
+                                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                 loading="lazy">
+                                        @endif
+                                    @elseif($gallery->image)
+                                        {{-- Local Video Preview --}}
+                                        <video class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                            <source src="{{ Storage::url($gallery->image) }}#t=0.5" type="video/mp4">
+                                        </video>
+                                    @endif
+                                    
+                                    {{-- Play Icon Overlay for Videos --}}
+                                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:scale-110 transition-transform duration-500">
+                                        <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 shadow-lg">
+                                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                @elseif($gallery->image)
                                     <img src="{{ Storage::url($gallery->image) }}"
                                          alt="{{ $gallery->title }}"
                                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"

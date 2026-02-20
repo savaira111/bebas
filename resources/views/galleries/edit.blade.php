@@ -22,6 +22,18 @@
                                 @error('title') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                             </div>
 
+                            <!-- Type -->
+                            <div>
+                                <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
+                                <select name="type" id="type" onchange="toggleType(this.value)" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50" required>
+                                    <option value="foto" {{ old('type', $gallery->type) == 'foto' ? 'selected' : '' }}>Photo</option>
+                                    <option value="video" {{ old('type', $gallery->type) == 'video' ? 'selected' : '' }}>Video</option>
+                                </select>
+                                @error('type') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Category -->
                             <div>
                                 <label for="category_id" class="block text-sm font-medium text-gray-700">Category</label>
@@ -31,7 +43,12 @@
                                         <option value="{{ $category->id }}" {{ old('category_id', $gallery->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                     @endforeach
                                 </select>
-                                @error('category_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Video URL (conditionally shown) -->
+                            <div id="video-url-group" class="{{ old('type', $gallery->type) == 'video' ? '' : 'hidden' }}">
+                                <label for="video_url" class="block text-sm font-medium text-gray-700">YouTube Video URL</label>
+                                <input type="text" name="video_url" id="video_url" value="{{ old('video_url', $gallery->video_url) }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50" placeholder="https://www.youtube.com/watch?v=...">
                             </div>
                         </div>
 
@@ -86,6 +103,15 @@
     </div>
 
     <script>
+        function toggleType(type) {
+            const videoGroup = document.getElementById('video-url-group');
+            if (type === 'video') {
+                videoGroup.classList.remove('hidden');
+            } else {
+                videoGroup.classList.add('hidden');
+            }
+        }
+
         function previewImage(event) {
             var reader = new FileReader();
             reader.onload = function(){

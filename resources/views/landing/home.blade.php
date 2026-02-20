@@ -87,14 +87,39 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse($galleries as $gallery)
                     <div class="relative group overflow-hidden h-80 rounded-sm" data-aos="zoom-in" data-aos-delay="{{ $loop->iteration * 100 }}">
-                        @php
-                            $coverPhoto = $gallery->photos->first()?->file_path ?? null;
-                        @endphp
-                        
-                        @if($coverPhoto)
-                             <img src="{{ Storage::url($coverPhoto) }}" alt="{{ $gallery->title }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                        @if($gallery->type === 'video')
+                            @if($gallery->video_url)
+                                {{-- YouTube Thumbnail --}}
+                                @php
+                                    $videoId = '';
+                                    if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $gallery->video_url, $matches)) {
+                                        $videoId = $matches[1];
+                                    }
+                                @endphp
+                                @if($videoId)
+                                    <img src="https://img.youtube.com/vi/{{ $videoId }}/mqdefault.jpg"
+                                         alt="{{ $gallery->title }}"
+                                         class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                                @endif
+                            @elseif($gallery->image)
+                                {{-- Local Video Preview --}}
+                                <video class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                                    <source src="{{ Storage::url($gallery->image) }}#t=0.5" type="video/mp4">
+                                </video>
+                            @endif
+
+                            {{-- Play Icon Overlay for Videos --}}
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none group-hover:scale-110 transition-transform duration-500 z-10">
+                                <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 shadow-lg">
+                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        @elseif($gallery->image)
+                            <img src="{{ Storage::url($gallery->image) }}" alt="{{ $gallery->title }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
                         @else
-                             <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
+                            <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">
                                 <span class="italic">No Cover</span>
                             </div>
                         @endif
